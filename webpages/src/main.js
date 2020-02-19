@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import instance from './network/request'
 
 Vue.config.productionTip = false
+Vue.prototype.$request=instance
+
 
 new Vue({
   router,
