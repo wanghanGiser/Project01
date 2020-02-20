@@ -4,20 +4,20 @@ import Map from '@/views/Map'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     component: Map
   },
   {
-    path:"/chart",
-    component:()=> import ("@/views/Chart.vue")
+    path: "/chart",
+    component: () => import("@/views/Chart.vue")
   }
 ]
 
 const router = new VueRouter({
   routes,
-  mode: "history"
+  mode: "history",
+  linkActiveClass: "active"
 })
 
 export default router

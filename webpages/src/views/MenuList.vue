@@ -1,26 +1,59 @@
 <template>
   <div id="menu-list">
-    <router-link to="/" :class="exam1" active-class="active">map</router-link>
-    <router-link to="/Chart" :class="exam1" active-class="active">chart</router-link>
+    <router-link to="/" :class="exam1" exact>map</router-link>
+    <router-link to="/chart" :class="exam1">chart</router-link>
   </div>
 </template>
 
 <script>
 export default {
-
+  data() {
+    return {
+      exam1: "exam1"
+    };
+  }
 };
 </script>
 
 <style>
 #menu-list {
-  background-color: aqua;
+  height: 100vh;
+  float: left;
+  background-color: blue
 }
-.exam1{
+
+@media all and (max-width: 768px) {
+  #menu-list {
+    width: 300px;
+    background-color: aliceblue;
+    position: absolute;
+    z-index: 2;
+    left: -100%;
+  }
+}
+@media all and (min-width: 768px) and (max-width: 992px) {
+  #menu-list {
+    width: 200px;
+    background-color: antiquewhite;
+  }
+}
+@media all and (min-width: 992px) and (max-width: 1200px) {
+  #menu-list {
+    width: 300px;
+    background-color: aqua;
+  }
+}
+@media all and (min-width: 1200px) {
+  #menu-list {
+    width: 300px;
+    background-color: aquamarine;
+  }
+}
+.exam1 {
   text-decoration: none;
-  display:inline-block;
-  padding: 3px;
+  padding: 5px;
 }
-.active{
-  color: red
+.active {
+  color: red;
 }
 </style>

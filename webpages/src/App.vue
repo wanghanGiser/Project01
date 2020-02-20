@@ -27,37 +27,16 @@ export default {
 }
 </script>
 <style>
-html,body{
+*{
   padding: 0;
   margin: 0;
   font-size: 18px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  
   color: #2c3e50;
   width: 100vw;
   height: 100vh;
 }
-#router-view{
-  flex: 5
-}
-@media screen and (max-width: 768){
-  
-}
-@media screen and (min-width: 768){
-  
-}
-@media screen and (min-width: 992){
-  
-}
-@media screen and (min-width: 1200){
-  
-}
-.exam1{
 
-}
-.exam2{
-
-}
 </style>
