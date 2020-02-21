@@ -2,13 +2,14 @@
   <div id="menu-list" :style="showMenu">
     <menu-header/>
     <tab-button @childEmit="menuList()"/>
-    
+    <list-box/>
   </div>
 </template>
 
 <script>
 import MenuHeader from "@/components/MenuHeader";
-import TabButton from "@/components/common/TabButton"
+import TabButton from "@/components/common/TabButton";
+import ListBox from "@/components/ListBox";
 export default {
   data() {
     return {
@@ -17,7 +18,8 @@ export default {
   },
   components: {
     MenuHeader,
-    TabButton
+    TabButton,
+    ListBox
   },
   methods: {
     menuList() {
