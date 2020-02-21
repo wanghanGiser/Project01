@@ -27,18 +27,14 @@ export default {
 }
 </script>
 <style>
-*{
-  padding: 0;
-  margin: 0;
-}
-html,body{
-  font-size: 18px;
-}
+@import url("./views/css/common.css");
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #2c3e50;
   width: 100vw;
   height: 100vh;
 }
-
+.active {
+  color: red;
+}
 </style>

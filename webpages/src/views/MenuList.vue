@@ -42,6 +42,7 @@ export default {
 }
 .tab-button {
   display: none;
+  border-radius: 0 50% 50% 0
 }
 @media all and (max-width: 768px) {
   #menu-list {
@@ -53,11 +54,12 @@ export default {
   }
   .tab-button {
     width: 20px;
-    height: 30px;
+    height: 8em;
     background-color: #ccc;
     display: block;
     position: absolute;
     right: -20px;
+    top: calc(50vh - 7em)
   }
 }
 @media all and (min-width: 768px) and (max-width: 992px) {
@@ -79,7 +81,5 @@ export default {
   }
 }
 
-.active {
-  color: red;
-}
+
 </style>
