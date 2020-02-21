@@ -1,6 +1,8 @@
 <template>
   <div id="menu-header">
     <a @click="jumpTo()">{{tagName}}</a>
+    <a @click="jumpTo()">{{tagName}}</a>
+    <a @click="jumpTo()">{{tagName}}</a>
   </div>
 </template>
 
@@ -32,8 +34,10 @@ export default {
 
 <style>
 #menu-header{
+  display: flex;
+  flex-direction: row;
   height: 2em;
-  background-color: blueviolet;
+  background-color: #45aaf2;
   line-height: 2em;
 }
 a:hover{

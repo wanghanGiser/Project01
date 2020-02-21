@@ -3,7 +3,10 @@
   margin: 0;
 }
 html,body{
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+
   font-size: 18px;
+  color: #778ca3;
 }
 a{
   text-decoration: none;

@@ -1,14 +1,14 @@
 <template>
   <div id="menu-list" :style="showMenu">
     <menu-header/>
-    <div style="height:0px;position:relative">
-      <div class="tab-button" @click="menuList()" />
-    </div>
+    <tab-button @childEmit="menuList()"/>
+    
   </div>
 </template>
 
 <script>
 import MenuHeader from "@/components/MenuHeader";
+import TabButton from "@/components/common/TabButton"
 export default {
   data() {
     return {
@@ -16,7 +16,8 @@ export default {
     };
   },
   components: {
-    MenuHeader
+    MenuHeader,
+    TabButton
   },
   methods: {
     menuList() {
@@ -38,46 +39,31 @@ export default {
   transition: all 0.3s ease-in-out;
   height: 100vh;
   float: left;
-  background-color: blue;
+  color: #F8EFBA;
+  background-color: #227093;
 }
-.tab-button {
-  display: none;
-  border-radius: 0 50% 50% 0
-}
+
 @media all and (max-width: 768px) {
   #menu-list {
     width: 300px;
-    background-color: rgb(53, 110, 160);
     position: absolute;
     z-index: 2;
     left: -300px;
-  }
-  .tab-button {
-    width: 20px;
-    height: 8em;
-    background-color: #ccc;
-    display: block;
-    position: absolute;
-    right: -20px;
-    top: calc(50vh - 7em)
   }
 }
 @media all and (min-width: 768px) and (max-width: 992px) {
   #menu-list {
     width: 200px;
-    background-color: antiquewhite;
   }
 }
 @media all and (min-width: 992px) and (max-width: 1200px) {
   #menu-list {
     width: 300px;
-    background-color: aqua;
   }
 }
 @media all and (min-width: 1200px) {
   #menu-list {
     width: 300px;
-    background-color: aquamarine;
   }
 }
 
