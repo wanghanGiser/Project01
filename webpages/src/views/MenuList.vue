@@ -53,17 +53,17 @@ export default {
     left: -300px;
   }
 }
-@media all and (min-width: 768px) and (max-width: 992px) {
+@media all and (min-width: 769px) and (max-width: 992px) {
   #menu-list {
     width: 200px;
   }
 }
-@media all and (min-width: 992px) and (max-width: 1200px) {
+@media all and (min-width: 993px) and (max-width: 1200px) {
   #menu-list {
     width: 300px;
   }
 }
-@media all and (min-width: 1200px) {
+@media all and (min-width: 1201px) {
   #menu-list {
     width: 300px;
   }

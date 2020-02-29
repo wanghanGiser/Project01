@@ -16,17 +16,17 @@ export default {};
     width: 100vw;
   }
 }
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 769px) {
   #map {
     width: calc(100vw - 200px);
   }
 }
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 993px) {
   #map {
     width: calc(100vw - 300px);
   }
 }
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1201px) {
   #map {
     width: calc(100vw - 300px);
   }

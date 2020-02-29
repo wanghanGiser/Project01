@@ -20,17 +20,17 @@ export default {
     width: 100vw;
   }
 }
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 769px) {
   #chart {
     width: calc(100vw - 200px);
   }
 }
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 993px) {
   #chart {
     width: calc(100vw - 300px);
   }
 }
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1201px) {
   #chart {
     width: calc(100vw - 300px);
   }

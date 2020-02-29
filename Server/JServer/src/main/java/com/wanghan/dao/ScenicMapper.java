@@ -1,4 +1,11 @@
 package com.wanghan.dao;
 
-public class ScenicMapper {
+
+import com.wanghan.pojo.Scenic;
+
+import java.util.List;
+import java.util.Map;
+
+public interface ScenicMapper {
+    List<Map<String,String>> getScenics();
 }

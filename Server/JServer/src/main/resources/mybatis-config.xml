@@ -9,5 +9,7 @@
     </typeAliases>
     <mappers>
         <mapper class="com.wanghan.dao.UserMapper"/>
+        <mapper class="com.wanghan.dao.ScenicMapper"/>
+        <mapper class="com.wanghan.dao.RestMapper"/>
     </mappers>
 </configuration>

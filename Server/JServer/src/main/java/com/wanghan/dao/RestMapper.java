@@ -1,4 +1,10 @@
 package com.wanghan.dao;
 
-public class RestMapper {
+import com.wanghan.pojo.Rest;
+
+import java.util.List;
+import java.util.Map;
+
+public interface RestMapper {
+    List<Map<String,String>> getRests();
 }

@@ -7,6 +7,8 @@ public interface UserService {
     int insertUser(User user);
     //    查询
     User selectUserById(int id);
+    String selectUserByName(String name);
+
     String selectPwdByName(String name);
     String selectFavoritesById(int id);
     //更新数据
