@@ -1,15 +1,26 @@
 <template>
   <div id="menu-list" :style="showMenu">
-    <menu-header/>
-    <tab-button @childEmit="menuList()"/>
-    <list-box/>
+    <tab-button @childEmit="menuList()" />
+    <menu-header>
+      <div style="display:flex;align-items:center">
+        <user-image />&nbsp;
+        <div>
+          <a href="javascript:void(0);" @click="logReg(true)">登录</a>/
+          <a href="javascript:void(0);" @click="logReg(false)">注册</a>
+        </div>
+      </div>
+      <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" />
+    </menu-header>
+    <list-box />
   </div>
 </template>
 
 <script>
+import UserImage from "@/components/common/user/UserImage.vue";
 import MenuHeader from "@/components/MenuHeader";
 import TabButton from "@/components/common/TabButton";
 import ListBox from "@/components/ListBox";
+import ImageBtn from "@/components/common/ImageBtn.vue";
 export default {
   data() {
     return {
@@ -19,11 +30,16 @@ export default {
   components: {
     MenuHeader,
     TabButton,
-    ListBox
+    ListBox,
+    UserImage,
+    ImageBtn
   },
   methods: {
     menuList() {
       this.isShow = !this.isShow;
+    },
+    logReg(bool){    
+      this.$emit("toLogReg",bool)
     }
   },
   computed: {
@@ -36,12 +52,12 @@ export default {
 };
 </script>
 
-<style>
+<style scop>
 #menu-list {
   transition: all 0.3s ease-in-out;
   height: 100vh;
   float: left;
-  color: #F8EFBA;
+  color: #f8efba;
   background-color: #227093;
 }
 
@@ -68,6 +84,11 @@ export default {
     width: 300px;
   }
 }
-
-
+a {
+  text-decoration: underline;
+  color: #f5f6fa;
+}
+a:active {
+  color: #e84118;
+}
 </style>

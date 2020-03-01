@@ -1,43 +1,43 @@
 <template>
   <div id="app">
-    <container :isShow="isShow">
-      <div style="width:200px;height:200px;background-color:#ccc;">
-        <close-bar @closeEvent="show()"/>
-      </div>
+    <container v-if="isShow" @click="show()">
+      <login-reg @close="close()" :isReg="isReg" />
     </container>
-    <menu-list />
-    <router-view />
+    <menu-list @toLogReg="toLogReg($event)" />
+    <div style="float:left">
+      <jump-to />
+      <router-view />
+    </div>
   </div>
 </template>
 <script>
 import MenuList from "@/views/MenuList";
 import Container from "@/components/common/Container.vue";
-import CloseBar from "@/components/common/CloseBar.vue";
-
+import JumpTo from "@/components/JumpTo.vue";
+import LoginReg from "@/components/common/LoginReg.vue";
 export default {
   data() {
     return {
-      isShow:true
+      isShow: true,
+      isReg: false
     };
   },
   components: {
-    MenuList,Container,CloseBar
+    MenuList,
+    Container,
+    JumpTo,
+    LoginReg
   },
-  methods:{
-    show(){
-      this.isShow=!this.isShow
+  methods: {
+    close() {      
+      this.isShow = !this.isShow;
+    },
+    toLogReg(bool) {
+      this.isReg = bool ? false : true;
+      this.isShow = true;
     }
   },
-  mounted() {
-    this.$request
-      .get("/demo.txt")
-      .then(res => {
-        this.msg = res.data;
-      })
-      .catch(err => {
-        this.msg = "请求失败" + err;
-      });
-  }
+  mounted() {}
 };
 </script>
 <style>

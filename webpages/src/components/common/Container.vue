@@ -1,15 +1,11 @@
 <template>
-  <div id="container" v-show="isShow">
+  <div id="container">
     <slot></slot>
   </div>
 </template>
 
 <script>
-export default {
-  props:{
-    isShow:Boolean
-  }
-};
+export default {};
 </script>
 
 <style>
@@ -20,7 +16,7 @@ export default {
   z-index: 100;
   line-height: 100vh;
   display: flex;
-  align-items: center; /*定义body的元素垂直居中*/
+  align-items: center;
   justify-content: center;
 }
 </style>

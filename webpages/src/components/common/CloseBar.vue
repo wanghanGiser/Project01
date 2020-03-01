@@ -1,21 +1,16 @@
 <template>
-  <div id="closeBar" @click="btnC()">
+  <div id="closeBar" >
     <div class="close"/>
   </div>
 </template>
 
 <script>
-export default {
-  methods: {
-    btnC() {
-      this.$emit("closeEvent");
-    }
-  }
-};
+export default {};
 </script>
 
 <style scoped>
 #closeBar {
+  width: 100%;
   height: 0;
   position: relative;
 }
@@ -27,7 +22,7 @@ export default {
   height: 26px;
   background: silver;
   border-radius: 15px;
-  box-shadow: 0px .5px .5px .5px black;
+  box-shadow: 1px 1px 2px rgb(51, 49, 49);
   cursor: pointer;
 }
 

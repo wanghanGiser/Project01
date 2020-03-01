@@ -1,12 +1,11 @@
 <template>
   <div id="menu-header">
-    <a @click="jumpTo()">{{tagName}}</a>
-    <a @click="jumpTo()">{{tagName}}</a>
-    <a @click="jumpTo()">{{tagName}}</a>
+    <slot></slot>
   </div>
 </template>
-
 <script>
+
+
 export default {
   data(){
     return{
@@ -14,21 +13,10 @@ export default {
     }
   },
   methods:{
-    jumpTo(){
-      switch (this.$route.path) {
-        case "/":
-          this.$router.push({path:"/chart"})
-          this.tagName="回到地图"
-          break;
-      
-        default:
-          this.$router.push({path:"/"})
-          this.tagName="统计数据"
-          break;
-      }
-    }
   },
-  
+  components:{
+   
+  }
 };
 </script>
 
@@ -36,15 +24,9 @@ export default {
 #menu-header{
   display: flex;
   flex-direction: row;
-  height: 2em;
+  height: 4em;
+  align-items: center;
+  justify-content: space-around;
   background-color: #45aaf2;
-  line-height: 2em;
-}
-a:hover{
-  text-decoration: tomato underline
-}
-.exam1 {
-  text-decoration: none;
-  padding: 5px;
 }
 </style>

@@ -21,7 +21,11 @@ export default {
 .tab-button {
   display: none;
   background-color: #33d9b2;
-  border-radius: 0 50% 50% 0
+  border-radius: 0 50% 50% 0;
+  box-sizing: border-box
+}
+.tab-button:hover{
+  box-shadow:0 0 5px black
 }
 @media all and (max-width: 768px) {
   .tab-button {
@@ -30,7 +34,7 @@ export default {
     display: block;
     position: absolute;
     right: -20px;
-    top: calc(50vh - 7em)
+    top: calc(50vh - 4em)
   }
 }
 </style>
