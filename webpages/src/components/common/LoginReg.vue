@@ -50,7 +50,7 @@ export default {
   box-shadow: 0 0 10px black
 }
 #log-reg {
-  width: 500px;
+  width: 400px;
   height: 300px;
   display: flex; 
   flex-direction: column;
@@ -65,11 +65,11 @@ export default {
 input {
   color: #718093;
   width: 70%;
-  height: 2.5em;
+  height: 2.8em;
   box-sizing: border-box;
   outline: none;
   text-align: center;
-  border-radius: 1.25em;
+  border-radius: 1.4em;
   border: none
 }
 input[type="submit"]{

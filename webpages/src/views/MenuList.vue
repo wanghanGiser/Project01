@@ -3,9 +3,9 @@
     <tab-button @childEmit="menuList()" />
     <menu-header>
       <div style="display:flex;align-items:center">
-        <user-image />&nbsp;
+        <user-image />
         <div>
-          <a href="javascript:void(0);" @click="logReg(true)">登录</a>/
+          <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
           <a href="javascript:void(0);" @click="logReg(false)">注册</a>
         </div>
       </div>

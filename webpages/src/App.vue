@@ -18,7 +18,7 @@ import LoginReg from "@/components/common/LoginReg.vue";
 export default {
   data() {
     return {
-      isShow: true,
+      isShow: false,
       isReg: false
     };
   },
