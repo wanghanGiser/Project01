@@ -1,5 +1,5 @@
 <template>
-  <div id="map">这是map路由组件</div>
+  <div id="map"></div>
 </template>
 
 <script>

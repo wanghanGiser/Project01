@@ -47,13 +47,16 @@ export default {
 <style scoped>
 #mainLog {
   background-color: #dcdde1;
-  box-shadow: 0 0 10px black
+  box-shadow: 0 0 10px black;
+  position: relative;
 }
+
 #log-reg {
   width: 400px;
   height: 300px;
   display: flex; 
   flex-direction: column;
+  
   align-items: center;
   justify-content: space-around;
 }

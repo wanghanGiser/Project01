@@ -27,6 +27,6 @@ export default {
   height: 4em;
   align-items: center;
   justify-content: space-around;
-  background-color: #45aaf2;
+  background-color: rgba(0, 168, 255,0.5);
 }
 </style>

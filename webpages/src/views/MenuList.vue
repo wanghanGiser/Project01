@@ -5,6 +5,7 @@
       <div style="display:flex;align-items:center">
         <user-image />
         <div>
+          
           <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
           <a href="javascript:void(0);" @click="logReg(false)">注册</a>
         </div>
@@ -66,6 +67,7 @@ export default {
     width: 300px;
     position: absolute;
     z-index: 2;
+    background-color: rgba(47, 54, 64,0.85);
     left: -300px;
   }
 }
