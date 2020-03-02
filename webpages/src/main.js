@@ -4,7 +4,7 @@ import router from './router'
 import instance from './network/request'
 
 Vue.config.productionTip = false
-Vue.prototype.$request=instance
+Vue.prototype.$ajax=instance
 
 
 new Vue({

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <container v-if="isShow" @click="show()">
-      <login-reg @close="close()" :isReg="isReg" />
+      <login-reg @close="close()" :isReg="isReg" @submit="logOrReg(arguments)" />
     </container>
     <menu-list @toLogReg="toLogReg($event)" />
     <div style="float:left">
@@ -29,12 +29,30 @@ export default {
     LoginReg
   },
   methods: {
-    close() {      
+    close() {
       this.isShow = !this.isShow;
     },
     toLogReg(bool) {
       this.isReg = bool ? false : true;
       this.isShow = true;
+    },
+    logOrReg(args) {
+      if(args[0]){
+        this.$ajax.post("/user/reg",{
+          name:args[1].username,
+          pwd:args[1].password
+        }).then(res=>{
+          console.log(res.data);
+        })
+      }else{
+        this.$ajax.post("/user/login",{
+          name:args[1].username,
+          pwd:args[1].password
+        }).then(res=>{
+          console.log(res.data);
+        })
+      }
+      
     }
   },
   mounted() {}
