@@ -1,21 +1,93 @@
 <template>
-  <div>
-    <li>{{index}}-->{{test[index-1]}}</li>
+  <div id="list-item">
+    <div id="imageBox">
+      <img :src="src" />
+    </div>
+
+    <div id="descrip">
+      <h4>{{title}}</h4>
+      <p>
+        {{content}}
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return {
-      test: ["wanghan", "zhangsan", "王涵", "lisi", "wangwu", "前六"]
-    };
+    return {};
   },
   props: {
-    index:Number
+    src: {
+      type: String,
+      default: "http://www.sdta.cn/uploads/157225882496-3.png"
+    },
+    name_cn:{
+      type:String,
+      default:""
+    },
+    description:{
+      type:String,
+      default:""
+    }
+  },
+  computed:{
+    title(){
+      return this.name_cn.length>9?this.name_cn.substring(0,9)+"...":this.name_cn;
+    },
+    content(){
+      return this.description.length>35?this.description.substring(0,35)+"...":this.description;
+    }
   }
 };
 </script>
 
-<style>
+<style scoped>
+#list-item {
+  border: solid #fff;
+  border-width: 0.1px 0 0.1px 0;
+  cursor: pointer;
+  height: 5em;
+  display: flex;
+  margin-top: .5em;
+  align-items: center;
+  background-color: #ffffff
+}
+#list-item:hover{
+  box-shadow: 0 0 5px #000
+}
+#list-item:hover h4{
+  color: #0984e3
+}
+#imageBox {
+  flex: 4;
+  height: 100%;
+}
+img {
+  width: 100%;
+  height: 100%;
+}
+#descrip {
+  flex: 6;
+  height: 100%;
+  line-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center
+}
+h4{
+  font-size: .8em;
+  font-weight: 500;
+  padding: 1px 7px;
+  color: #2d3436;
+  position: relative;
+}
+p{
+  font-size: .7em;
+  padding: 7px;
+  overflow: hidden;
+  position: relative;
+}
 </style>

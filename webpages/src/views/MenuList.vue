@@ -3,9 +3,8 @@
     <tab-button @childEmit="menuList()" />
     <menu-header>
       <div style="display:flex;align-items:center">
-        <user-image />
-        <div>
-          
+        <user-image @click.native="exit()"/>
+        <div v-show="this.$store.state.isLogin">
           <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
           <a href="javascript:void(0);" @click="logReg(false)">注册</a>
         </div>
@@ -38,6 +37,11 @@ export default {
   methods: {
     menuList() {
       this.isShow = !this.isShow;
+      
+    },
+    exit(){
+      localStorage.removeItem("token");
+      this.$store.commit("setLogStatus");
     },
     logReg(bool){    
       this.$emit("toLogReg",bool)
@@ -55,11 +59,11 @@ export default {
 
 <style scop>
 #menu-list {
-  transition: all 0.3s ease-in-out;
+  transition: left 0.3s ease-in-out;
   height: 100vh;
   float: left;
-  color: #f8efba;
-  background-color: #227093;
+  color: #747d8c;
+  background-color: #f1f2f6;
 }
 
 @media all and (max-width: 768px) {
@@ -67,13 +71,12 @@ export default {
     width: 300px;
     position: absolute;
     z-index: 2;
-    background-color: rgba(47, 54, 64,0.85);
     left: -300px;
   }
 }
 @media all and (min-width: 769px) and (max-width: 992px) {
   #menu-list {
-    width: 200px;
+    width: 300px;
   }
 }
 @media all and (min-width: 993px) and (max-width: 1200px) {
@@ -88,7 +91,7 @@ export default {
 }
 a {
   text-decoration: underline;
-  color: #f5f6fa;
+  color: #0984e3;
 }
 a:active {
   color: #e84118;

@@ -38,7 +38,7 @@ export default {
 }
 @media screen and (min-width: 769px) {
   #map {
-    width: calc(100vw - 200px);
+    width: calc(100vw - 300px);
   }
 }
 @media screen and (min-width: 993px) {

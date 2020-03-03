@@ -1,5 +1,5 @@
 <template>
-  <div id="tab-button">
+  <div id="tab-button" title="展开">
     <div class="tab-button" @click="emitParent()" />
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
 }
 .tab-button {
   display: none;
-  background-color: #33d9b2;
+  background-color: #0984e3;
   border-radius: 0 50% 50% 0;
   box-sizing: border-box
 }

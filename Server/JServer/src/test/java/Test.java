@@ -4,6 +4,7 @@ import com.wanghan.pojo.Rest;
 import com.wanghan.pojo.Scenic;
 import com.wanghan.pojo.User;
 import com.wanghan.service.UserService;
+import com.wanghan.utils.JWTUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -35,5 +36,9 @@ public class Test {
         for (Map s:lists){
             System.out.println(s.get("name_cn"));
         }
+    }
+    @org.junit.Test
+    public void testJWT(){
+        System.out.println(JWTUtils.parseJWT(JWTUtils.createJWT(3,"dsads")));
     }
 }

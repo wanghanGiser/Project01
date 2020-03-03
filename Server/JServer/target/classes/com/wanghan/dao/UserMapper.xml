@@ -10,8 +10,8 @@
     <select id="selectUserById" resultType="User">
         select * from g_user where u_id=#{id};
     </select>
-    <select id="selectUserByName" parameterType="String" resultType="String">
-        select u_name from g_user where u_name=#{name};
+    <select id="selectUserByName" parameterType="String" resultType="User">
+        select * from g_user where u_name=#{name};
     </select>
     <select id="selectPwdByName" parameterType="String" resultType="String">
         select u_pwd from g_user where u_name=#{name};

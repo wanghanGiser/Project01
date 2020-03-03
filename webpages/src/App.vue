@@ -5,8 +5,8 @@
     </container>
     <menu-list @toLogReg="toLogReg($event)" />
     <div style="float:left">
-      <jump-to />
       <router-view />
+      <jump-to />
     </div>
   </div>
 </template>
@@ -49,13 +49,18 @@ export default {
           name:args[1].username,
           pwd:args[1].password
         }).then(res=>{
-          console.log(res.data);
+          if(res.data.token&&res.data.token!=""){
+            localStorage.setItem("token",res.data.token);
+            this.$store.commit("setLogStatus");
+            this.isShow=!this.isShow
+          }
         })
       }
-      
     }
   },
-  mounted() {}
+  mounted() {
+    this.$store.state.isLogin=localStorage.getItem("token")==null;
+  }
 };
 </script>
 <style>

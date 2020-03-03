@@ -38,7 +38,8 @@
     <session-config>
         <session-timeout>15</session-timeout>
     </session-config>
-<welcome-file-list>
-    <welcome-file>/WEB-INF/hello.html</welcome-file>
-</welcome-file-list>
+<!--    静态资源必须放在web-info目录下才能生效-->
+    <welcome-file-list>
+        <welcome-file>/WEB-INF/hello.html</welcome-file>
+    </welcome-file-list>
 </web-app>

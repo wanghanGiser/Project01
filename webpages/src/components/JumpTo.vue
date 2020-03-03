@@ -41,24 +41,30 @@ export default {
   position: relative;
 }
 #jump{
-  height: 2.5em;
-  width: 2.5em;
+  height: 2.2em;
+  width: 2.2em;
   display: block;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 3px;
+  right: 3px;
   box-sizing: border-box;
   border-radius: 50%;
+  border: 2.5px solid #1e90ff;
   background-position: center;
   background-size: 80% 80%;
   background-repeat: no-repeat;
-  background-color: #d2dae2
+  background-color: #ffffff;
+  transition: .2s all ease-in-out
 }
 input{
   display: none
 }
 #isChart:checked+#jump{
-  border: 4px solid #808e9b;
+  border: 6px solid #1e90ff;
+
+}
+#jump:hover{
+  box-shadow: 0 0 3px #000
 }
 
 </style>

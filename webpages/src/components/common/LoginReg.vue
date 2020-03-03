@@ -2,9 +2,9 @@
   <div id="mainLog">
     <close-bar @click.native="close()" />
     <div id="log-reg">
-      <input type="text" placeholder="用户名" v-model.lazy="username" />
-      <input type="password" placeholder="密码" v-model.lazy="password" />
-      <input type="password" v-show="isReg" placeholder="再次输入" v-model.lazy="password2" />
+      <input type="text" placeholder="用户名" v-model.trim.lazy="username" />
+      <input type="password" placeholder="密码" v-model.trim.lazy="password" />
+      <input type="password" v-show="isReg" placeholder="再次输入" v-model.trim.lazy="password2" />
       <input type="submit" :value="btnName" @click="submit()" />
     </div>
   </div>
@@ -50,9 +50,6 @@ export default {
   },
   methods: {
     close() {
-      this.username = "";
-      this.password = "";
-      this.password2 = "";
       this.$emit("close");
     },
     submit() {

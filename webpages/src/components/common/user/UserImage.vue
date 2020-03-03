@@ -23,10 +23,11 @@ export default {
   position: relative;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  background-position: center
+  background-position: center;
+  cursor: pointer;
 }
 #user-image:hover {
-  border: 1.5px solid #778ca3;
+  box-shadow: 0 0 2px #000
 }
 img{
   width: 3em;

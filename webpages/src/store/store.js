@@ -4,7 +4,8 @@ import Vuex from "vuex"
 Vue.use(Vuex)
 const store={
   state:{
-    isLogin:false
+    isLogin:false,
+    cata:"rest"
   },
   getters:{
     getLogStatus(state){

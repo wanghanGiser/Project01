@@ -7,6 +7,16 @@ public class LoginRegStatus {
     private boolean status;
     private String logInfo;
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    private String token;
+
     public boolean isStatus() {
         return status;
     }
@@ -26,8 +36,9 @@ public class LoginRegStatus {
     public LoginRegStatus() {
     }
 
-    public LoginRegStatus(boolean status, String logInfo) {
+    public LoginRegStatus(boolean status, String logInfo,String token) {
         this.status = status;
         this.logInfo = logInfo;
+        this.token=token;
     }
 }

@@ -14,6 +14,7 @@ export default {
 #chart {
   float: left;
   height: 100vh;
+   transition: .5s all ease-in-out;
 }
 @media screen and (max-width: 768px) {
   #chart {
@@ -22,7 +23,7 @@ export default {
 }
 @media screen and (min-width: 769px) {
   #chart {
-    width: calc(100vw - 200px);
+    width: calc(100vw - 300px);
   }
 }
 @media screen and (min-width: 993px) {

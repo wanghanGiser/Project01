@@ -3,7 +3,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-          target: 'http://localhost:8888/JServer_war_exploded/',
+          target: 'http://localhost:8888/',
           changeOrigin: true,
           ws: true,
           pathRewrite: {
