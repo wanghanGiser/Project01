@@ -1,5 +1,5 @@
 <template>
-  <div id="list-item">
+  <div id="list-item" @click="changeMap()">
     <div id="imageBox">
       <img :src="src" />
     </div>
@@ -14,11 +14,16 @@
 </template>
 
 <script>
+import {addFeatureInfo} from "@/js/map-load.js"
 export default {
   data() {
     return {};
   },
   props: {
+    id:{
+      type:String,
+      default:""
+    },
     src: {
       type: String,
       default: "http://www.sdta.cn/uploads/157225882496-3.png"
@@ -30,6 +35,24 @@ export default {
     description:{
       type:String,
       default:""
+    },
+    location:{
+      type:String,
+      required:true
+    }
+  },
+  methods:{
+    changeMap(){
+      this.$emit("itemClick");
+      addFeatureInfo(
+          this.$store.state.cata,
+          this.id,
+          document.getElementById("popup")
+        ).then(res => {
+          if (res) {
+            this.$store.state.overLay.setPosition(this.location.split(","));
+          }
+        });
     }
   },
   computed:{

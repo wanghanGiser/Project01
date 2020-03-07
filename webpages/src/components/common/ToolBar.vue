@@ -1,10 +1,10 @@
 <template>
   <div id="toolbar">
     <div id="searchbox">
-      <input type="search" :style="bkgImg"/>
+      <input id="search" type="search" :style="bkgImg" v-model.trim="searchtext" @keyup.13="searchFocus()" />
     </div>
     <div id="selectbox">
-      <select v-model="optSelect">
+      <select v-model="optSelect" @change="changeSelect()">
         <option value="scenic">景区</option>
         <option value="rest">酒店</option>
       </select>
@@ -13,9 +13,11 @@
       <a href="javascript:void(0);">筛选</a>
       <ul>
         <li v-for="(item,index) in levels[this.$store.state.cata]" :key="index">
-          <label><input type="checkbox">{{item}}</label>
+          <label>
+            <input type="checkbox" />
+            {{item}}
+          </label>
         </li>
-        
       </ul>
     </div>
   </div>
@@ -23,16 +25,26 @@
 
 <script>
 export default {
-  data(){
-    return{
-      bkgImg:{
-        backgroundImage:"url("+require("@/assets/search.png")+")"
+  data() {
+    return {
+      bkgImg: {
+        backgroundImage: "url(" + require("@/assets/search.png") + ")"
       },
-      optSelect:"scenic",
-      levels:{
-        scenic:["5A级","4A级","3A级","2A级"],
-        rest:["5星级","4星级","3星级","2星级"]
-      }
+      optSelect: "scenic",
+      levels: {
+        scenic: ["5A级", "4A级", "3A级", "2A级"],
+        rest: ["5星级", "4星级", "3星级", "2星级"]
+      },
+      searchtext:""
+    };
+  },
+  methods: {
+    searchFocus() {
+      console.log(this.searchtext);
+      document.getElementById("search").blur();
+    },
+    changeSelect(){
+      this.$store.commit("setCata",this.optSelect)
     }
   }
 };
@@ -57,29 +69,29 @@ input[type="search"] {
   padding-left: 1.7em;
   background-size: 1.6em 1.6em;
   background-position: 1% 50%;
-  background-repeat: no-repeat
+  background-repeat: no-repeat;
 }
 input[type="search"]:focus {
   box-shadow: 0 0 3px #0984e3;
 }
-#selectbox{
-  width:3em;
-  height: 1.5em; 
+#selectbox {
+  width: 3em;
+  height: 1.5em;
 }
-select{
+select {
   outline: none;
   border: none;
   width: 100%;
-  height: 100%
+  height: 100%;
 }
 
-#checkbox{
+#checkbox {
   position: relative;
   height: 1.5em;
   line-height: 1.5em;
-  font-size: .8em
+  font-size: 0.8em;
 }
-#checkbox>ul{
+#checkbox > ul {
   color: #353b48;
   position: absolute;
   right: 0;
@@ -91,24 +103,23 @@ select{
   height: 0;
   overflow: hidden;
 }
-#checkbox>ul>li{
+#checkbox > ul > li {
   width: 5em;
   height: 2em;
   text-align: center;
   line-height: 2em;
 }
-#checkbox>ul>li:hover{
+#checkbox > ul > li:hover {
   background-color: #0984e3;
-  color: #fff
+  color: #fff;
 }
-#checkbox:hover>ul{
+#checkbox:hover > ul {
   height: auto;
 }
-#checkbox>ul>li>label{
+#checkbox > ul > li > label {
   display: block;
   width: 100%;
   height: 2em;
-  line-height: 2em
+  line-height: 2em;
 }
-
 </style>>

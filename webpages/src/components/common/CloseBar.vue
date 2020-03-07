@@ -1,6 +1,6 @@
 <template>
-  <div id="closeBar" >
-    <div class="close"/>
+  <div id="closeBar">
+    <div class="close" />
   </div>
 </template>
 

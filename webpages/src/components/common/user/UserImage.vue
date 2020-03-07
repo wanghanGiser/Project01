@@ -18,6 +18,7 @@ export default {
 #user-image {
   width: 3em;
   height: 3em;
+  margin-right: 3px;
   box-sizing: border-box;
   border-radius: 1.5em;
   position: relative;

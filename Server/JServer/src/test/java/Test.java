@@ -23,7 +23,7 @@ public class Test {
     public void testScenic(){
         ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
         ScenicMapper mapper=context.getBean("scenicMapper",ScenicMapper.class);
-        List<Map<String,String>> lists=mapper.getScenics();
+        List<Map<String,String>> lists=mapper.getScenics(10);
         for (Map s:lists){
             System.out.println(s.get("name_cn"));
         }
@@ -32,7 +32,7 @@ public class Test {
     public void testRest(){
         ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
         RestMapper mapper=context.getBean("restMapper", RestMapper.class);
-        List<Map<String,String>> lists=mapper.getRests();
+        List<Map<String,String>> lists=mapper.getRests(0);
         for (Map s:lists){
             System.out.println(s.get("name_cn"));
         }

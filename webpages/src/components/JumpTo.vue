@@ -1,70 +1,67 @@
 <template>
-  <div id="jump-to">
-    <label for="isChart" :title="msg">
-      <input type="checkbox" id="isChart"/>
-      <a id="jump" @click="jumpTo()" :style="{backgroundImage:image}"></a>
-    </label>
-    
+  <div id="jump-to" >
+    <div class="item" style="height: 1.375em;" @click="on_off()">+</div>
+    <div class="item" />
+    <div class="item" />
+    <div class="item" />
   </div>
 </template>
 
 <script>
-let tochart=require("@/assets/tochart.png");
 export default {
-  data(){
-    return{
-      image:"url("+tochart+")",
-      msg:"显示图表"
+  data() {
+    return {};
+  },
+  mounted(){
+    let items=document.getElementsByClassName("item");
+    let size=items.length;
+    for(let i=1; i<size;i++){
+      items[i].style.transition="all "+i*0.1+"s "+"ease-out "+(i-1)*0.1+"s";
     }
   },
-  methods:{
-    jumpTo(){
-      switch (this.$route.path) {
-        case "/":
-          this.$router.push({path:"/chart"});
-          this.msg="显示地图"
-          break;
-      
-        default:
-          this.$router.push({path:"/"})
-          this.msg="显示图表"
-          break;
+  methods: {
+    on_off(){
+      let items=document.getElementsByClassName("item");
+      for(let i=1;i<items.length;i++){
+        items[i].style.height=items[i].style.height=="0em"?"1.375em":"0em";
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
-#jump-to{
-  height: 0;
-  position: relative;
-}
-#jump{
-  height: 2.2em;
-  width: 2.2em;
-  display: block;
+#jump-to {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  border: 2.5px solid #1e90ff;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 2px;
+  bottom:.5em;
+  right: .5em;
+  display: flex;
+  flex-direction: column-reverse;
+  
+}
+.item {
+  display: block;
+  margin: 1px;
+  padding: 0;
+  color: white;
+  font-size: 1.14em;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  
+  width: 1.375em;
+  line-height: 0.4em;
+  background-color: rgba(0, 60, 136, 0.5);
+  border: none;
   background-position: center;
-  background-size: 80% 80%;
+  background-size:60%;
   background-repeat: no-repeat;
-  background-color: #ffffff;
-  transition: .2s all ease-in-out
+  
 }
-input{
-  display: none
+.item:hover{
+  background-color: rgba(0, 60, 136, 0.7);
 }
-#isChart:checked+#jump{
-  border: 6px solid #1e90ff;
-
-}
-#jump:hover{
-  box-shadow: 0 0 3px #000
-}
-
 </style>

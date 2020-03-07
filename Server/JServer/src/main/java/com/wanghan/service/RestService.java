@@ -6,5 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface RestService {
-    List<Map<String,String>> getRests();
+    List<Map<String,String>> getRests(int start);
+    List<Map<String,String>> getAllRest();
+    Map<String,String> getInfoById(String id);
+
 }

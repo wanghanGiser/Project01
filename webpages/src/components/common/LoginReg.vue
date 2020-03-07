@@ -2,10 +2,10 @@
   <div id="mainLog">
     <close-bar @click.native="close()" />
     <div id="log-reg">
-      <input type="text" placeholder="用户名" v-model.trim.lazy="username" />
-      <input type="password" placeholder="密码" v-model.trim.lazy="password" />
-      <input type="password" v-show="isReg" placeholder="再次输入" v-model.trim.lazy="password2" />
-      <input type="submit" :value="btnName" @click="submit()" />
+      <input type="text" placeholder="用户名" v-model.trim.lazy="username" @keyup.13="goDown()"/>
+      <input type="password" placeholder="密码" v-model.trim.lazy="password" @keyup.13="submit()"/>
+      <input type="password" v-show="isReg" placeholder="再次输入" v-model.trim.lazy="password2" @keyup.13="submit()"/>
+      <input type="submit" :value="btnName"  @click="submit()" />
     </div>
   </div>
 </template>
@@ -25,7 +25,7 @@ export default {
     return {
       username: "",
       password: "",
-      password2: ""
+      password2: "",
     };
   },
   computed: {
@@ -40,12 +40,6 @@ export default {
         pwd: reg2Pwd.test(this.password),
         isPwdSame: this.isReg ? this.password === this.password2 : true
       };
-      //  (
-
-      //   reg2Uname.test(this.username) &&
-      //   reg2Pwd.test(this.password) &&
-      //   (this.isReg ? reg2Pwd.test(this.password2) : true)
-      // );
     }
   },
   methods: {
@@ -61,6 +55,9 @@ export default {
       } else {
         alert("填写错误");
       }
+    },
+    goDown(){
+      document.querySelector("input[type='password']").focus();
     }
   }
 };
@@ -74,6 +71,8 @@ export default {
 }
 
 #log-reg {
+  max-width: 98vw;
+  max-height: 90vh;
   width: 400px;
   height: 300px;
   display: flex;

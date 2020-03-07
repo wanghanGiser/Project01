@@ -1,17 +1,20 @@
 <template>
-  <div id="menu-list" :style="showMenu">
-    <tab-button @childEmit="menuList()" />
-    <menu-header>
-      <div style="display:flex;align-items:center">
-        <user-image @click.native="exit()"/>
-        <div v-show="this.$store.state.isLogin">
-          <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
-          <a href="javascript:void(0);" @click="logReg(false)">注册</a>
+  <div id="menu-list" :style="showMenu" @click.stop>
+    <div id="buffer">
+      <tab-button @childEmit="menuList()" v-show="!$store.state.menuShow" />
+      <menu-header>
+        <div style="display:flex;align-items:center">
+          <user-image @click.native="exit()" />
+          <div v-show="$store.state.isLogin">
+            <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
+            <a href="javascript:void(0);" @click="logReg(false)">注册</a>
+          </div>
+          <a href="javascript:void(0);" v-show="$store.state.isLogin">{{username}}</a>
         </div>
-      </div>
-      <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" />
-    </menu-header>
-    <list-box />
+        <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" />
+      </menu-header>
+      <list-box @itemClick="itemClick()" />
+    </div>
   </div>
 </template>
 
@@ -21,11 +24,18 @@ import MenuHeader from "@/components/MenuHeader";
 import TabButton from "@/components/common/TabButton";
 import ListBox from "@/components/ListBox";
 import ImageBtn from "@/components/common/ImageBtn.vue";
+
 export default {
   data() {
     return {
       isShow: false
     };
+  },
+  props: {
+    username: {
+      type: String,
+      default: ""
+    }
   },
   components: {
     MenuHeader,
@@ -36,34 +46,38 @@ export default {
   },
   methods: {
     menuList() {
-      this.isShow = !this.isShow;
-      
+      this.$store.commit("setMenuShow");
     },
-    exit(){
+    exit() {
       localStorage.removeItem("token");
       this.$store.commit("setLogStatus");
     },
-    logReg(bool){    
-      this.$emit("toLogReg",bool)
+    logReg(bool) {
+      this.$emit("toLogReg", bool);
+    },
+    itemClick() {
+      this.$store.commit("setMenuShow");
     }
   },
   computed: {
     showMenu() {
       return {
-        left: this.isShow ? "0" : "-300px"
+        left: this.$store.state.menuShow ? "0" : "-300px"
       };
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 
-<style scop>
+<style scoped>
 #menu-list {
-  transition: left 0.3s ease-in-out;
+  transition: left 0.4s ease-in-out;
   height: 100vh;
   float: left;
   color: #747d8c;
   background-color: #f1f2f6;
+  box-shadow: 0 0 3px #000;
 }
 
 @media all and (max-width: 768px) {

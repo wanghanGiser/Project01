@@ -26,12 +26,13 @@ c3p0  自动化操作（自动的加载配置文件 并且设置到对象里面�
         <!-- c3p0连接池的私有属性 -->
         <property name="maxPoolSize" value="30"/>
         <property name="minPoolSize" value="10"/>
-        <!-- 关闭连接后不自动commit -->
+<!--         关闭连接后不自动commit-->
         <property name="autoCommitOnClose" value="false"/>
-        <!-- 获取连接超时时间 -->
-        <property name="checkoutTimeout" value="10000"/>
-        <!-- 当获取连接失败重试次数 -->
+<!--         获取连接超时时间-->
+        <property name="checkoutTimeout" value="0"/>
+<!--         当获取连接失败重试次数-->
         <property name="acquireRetryAttempts" value="2"/>
+<!--                空闲连接自动断开-->
     </bean>
 
     <!-- 3.配置SqlSessionFactory对象 -->

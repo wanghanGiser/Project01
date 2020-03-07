@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <container v-if="isShow" @click="show()">
-      <login-reg @close="close()" :isReg="isReg" @submit="logOrReg(arguments)" />
+    <container v-if="isShow">
+      <login-reg @close="close()" :isReg="isReg" @submit="logOrReg(arguments)"/>
     </container>
-    <menu-list @toLogReg="toLogReg($event)" />
+    <v-touch v-on:swipeleft="onSwipeLeft">
+      <menu-list @toLogReg="toLogReg($event)" :username="username"/>
+    </v-touch> 
     <div style="float:left">
       <router-view />
       <jump-to />
@@ -19,7 +21,8 @@ export default {
   data() {
     return {
       isShow: false,
-      isReg: false
+      isReg: false,
+      username:""
     };
   },
   components: {
@@ -37,29 +40,42 @@ export default {
       this.isShow = true;
     },
     logOrReg(args) {
-      if(args[0]){
-        this.$ajax.post("/user/reg",{
-          name:args[1].username,
-          pwd:args[1].password
-        }).then(res=>{
-          console.log(res.data);
-        })
-      }else{
-        this.$ajax.post("/user/login",{
-          name:args[1].username,
-          pwd:args[1].password
-        }).then(res=>{
-          if(res.data.token&&res.data.token!=""){
-            localStorage.setItem("token",res.data.token);
-            this.$store.commit("setLogStatus");
-            this.isShow=!this.isShow
-          }
-        })
+      if (args[0]) {
+        this.$ajax
+          .post("/user/reg", {
+            name: args[1].username,
+            pwd: args[1].password
+          })
+          .then(res => {
+            console.log(res.data);
+          });
+      } else {
+        this.$ajax
+          .post("/user/login", {
+            name: args[1].username,
+            pwd: args[1].password
+          })
+          .then(res => {
+            if (res.data.token && res.data.token != "") {
+              localStorage.setItem("token", res.data.token);
+              this.$store.commit("setLogStatus");
+              this.username=args[1].username;
+              this.isShow = !this.isShow;
+            }
+          });
       }
+    },
+    onSwipeLeft(){
+      this.$store.commit("setMenuShow");
     }
   },
   mounted() {
-    this.$store.state.isLogin=localStorage.getItem("token")==null;
+    this.$store.state.isLogin = localStorage.getItem("token") == null;
+    document.body.addEventListener("click", () => {      
+      if (this.$store.state.menuShow) {
+        this.$store.commit("setMenuShow");
+      }
+    });
   }
 };
 </script>

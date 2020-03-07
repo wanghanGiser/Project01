@@ -23,7 +23,6 @@ public class UserInfoController {
 //    requestParam接受的前端格式不能为json
     @PostMapping("/login")
     public LoginRegStatus login(@RequestBody Map<String,String> map, HttpServletRequest req){
-        System.out.println(req.getAttribute("isLogin"));
         status=new LoginRegStatus();
         User statu=service.selectUserByName(map.get("name"));
         if(statu!=null){
@@ -31,7 +30,6 @@ public class UserInfoController {
                 status.setStatus(true);
                 status.setLogInfo("ok");
                 status.setToken(JWTUtils.createJWT(statu.getU_id(),map.get("name")));
-                System.out.println("end");
                 return status;
             }
             status.setStatus(false);

@@ -23,9 +23,7 @@ public class JWTInterceptor implements HandlerInterceptor {
             Map<String,Object> map=JWTUtils.parseJWT(token);
             if((Boolean)map.get("success")){
                 int uID= (Integer) map.get("userID");
-                System.out.println(uID);
                 String uname= (String) map.get("userName");
-                System.out.println(uname);
                 User user=service.selectUserById(uID);
                 if(uname.equals(user.getU_name())){
                     request.setAttribute("isLogin",true);
