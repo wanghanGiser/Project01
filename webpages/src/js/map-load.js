@@ -27,11 +27,18 @@ import Stroke from 'ol/style/Stroke';
 import $Ajax from "../network/request"
 import {
   Feature,
-  Overlay
+  Overlay,
+  Geolocation
 } from 'ol';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
+import HeatMap from "ol/layer/Heatmap"
+import store from "@/store/store"
+import axios from 'axios'
+import LineString from 'ol/geom/LineString';
+import MultiLineString from 'ol/geom/MultiLineString';
 
+let geoLocation, map;
 
 function mapInit() {
   var projection = getProjection('EPSG:4326');
@@ -39,12 +46,12 @@ function mapInit() {
   var size = getWidth(projectionExtent) / 256;
   var resolutions = new Array(14);
   var matrixIds = new Array(14);
-  for (var z = 0; z < 14; ++z) {
+  for (var z = 0; z < 18; ++z) {
     // generate resolutions and matrixIds arrays for this WMTS
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] = z;
   }
-  const map = new Map({
+  map = new Map({
     layers: [
       new TileLayer({
         opacity: 0.7,
@@ -57,7 +64,12 @@ function mapInit() {
           format: "tiles",
           wrapX: true,
           tileGrid: new WMTSTileGrid({
-            origin: getTopLeft(projectionExtent),
+            origin: getTopLeft(projectionExtent).map((x, i) => {
+              if (i == 0) {
+                return x +0.0057;
+              }
+              return x-0.00035
+            }),
             //resolutions: res.slice(0, 15),
             resolutions: resolutions,
             matrixIds: matrixIds
@@ -74,7 +86,12 @@ function mapInit() {
           format: "tiles",
           wrapX: true,
           tileGrid: new WMTSTileGrid({
-            origin: getTopLeft(projectionExtent),
+            origin: getTopLeft(projectionExtent).map((x, i) => {
+              if (i == 0) {
+                return x + 0.0057;
+              }
+              return x-0.00035
+            }),
             resolutions: resolutions,
             matrixIds: matrixIds
           })
@@ -103,9 +120,77 @@ function mapInit() {
       minZoom: 4
     })
   });
+  geoLocation = new Geolocation({
+    tracking: false,
+    trackingOptions: {
+      enableHighAccuracy: true,
+      maximumAge: 10000,
+      timeout: 600000
+    },
+    projection: map.getView().getProjection(),
+  });
+  geoLocation.once("error", function () {
+    geoLocation.setTracking(false);
+    alert("定位失败！请确认是否打开定位权限")
+  })
+  let positionFeature = new Feature();
+  positionFeature.setStyle(new Style({
+    image: new CircleStyle({
+      radius: 12,
+      fill: new Fill({
+        color: '#eb3b5a'
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2
+      })
+    })
+  }));
+  geoLocation.on("change:tracking", () => {
+    if (!geoLocation.getTracking()) {
+      map.getView().animate({
+        center: [118.3506988, 35.3032403],
+        zoom: 10
+      });
+      positionFeature.setGeometry(null)
+    }
+  })
+  geoLocation.on('change:position', function () {
+    positionFeature.setStyle(new Style({
+      image: new CircleStyle({
+        radius: 12,
+        fill: new Fill({
+          color: '#eb3b5a'
+        }),
+        stroke: new Stroke({
+          color: '#fff',
+          width: 2
+        })
+      })
+    }));
+    let coordinates = geoLocation.getPosition();
+    store.commit("setLocal", coordinates.map(x => {
+      return x.toFixed(6);
+    }).toString())
+    positionFeature.setGeometry(coordinates ?
+      new Point(coordinates) : null);
+    map.getView().animate({
+      center: coordinates,
+      zoom: 15
+    });
+  });
+  new VectorLayer({
+    map: map,
+    source: new VectorSource({
+      features: [positionFeature]
+    })
+  });
+  document.getElementById("locate").onclick = function () {
+    geoLocation.setTracking(!geoLocation.getTracking());
+  }
   return map;
 }
-async function getPoints(cata) {
+async function getPoints(cata, map) {
   let idText = cata == "scenic" ? "scenic_id" : "restaurant_id";
   let levelText = cata == "scenic" ? "level_for_order" : "rest_level"
   let data = (await getData(cata)).data;
@@ -116,7 +201,12 @@ async function getPoints(cata) {
     let name = data[i].name_cn;
     let level = data[i][levelText];
     let feature = new Feature({
-      geometry: new Point(location),
+      geometry: new Point(location.map((x, i) => {
+        if (i == 0) {
+          return x + 0.0057;
+        }
+        return x-0.00035
+      })),
       sr_id: id,
       sr_name: name,
       level: level
@@ -132,6 +222,10 @@ async function getPoints(cata) {
     distance: 25,
     source: source
   })
+
+
+
+
   let layer = new VectorLayer({
     source: clusterSource,
     style: function (features) {
@@ -162,6 +256,31 @@ async function getPoints(cata) {
       return style;
     }
   })
+  let first = true;
+  let heatmap;
+  document.getElementById("heat-map").onclick = function () {
+    layer.setVisible(!layer.getVisible())
+    if (first) {
+      heatmap = new HeatMap({
+        source: clusterSource,
+        blur: 5,
+        radius: 10,
+        weight: function (feature) {
+          return parseInt(feature.get("features").sort(function (a, b) {
+            if (a.get("level") > b.get("level")) {
+              return -1;
+            }
+            return 1;
+          })[0].get("level").substr(0, 1)) / 5;
+        },
+        visible: true
+      })
+      map.addLayer(heatmap);
+      first = false;
+    } else {
+      heatmap.setVisible(!heatmap.getVisible());
+    }
+  }
   return layer
 }
 async function getData(cata) {
@@ -171,8 +290,9 @@ async function getData(cata) {
 function setOverLay(el) {
   return new Overlay({
     element: document.getElementById(el),
-    positioning: 'bottom-center',
+    positioning: 'bottom-left',
     autoPan: true,
+    insertFirst: false,
     stopEvent: true,
     autoPanAnimation: {
       duration: 400
@@ -181,7 +301,6 @@ function setOverLay(el) {
 }
 async function addFeatureInfo(cata, id, element1) {
   let element = document.createElement("div");
-  
   let res = await (await getInfo(cata, id)).data;
   let h1 = document.createElement("h2");
   h1.innerText = res.name_cn;
@@ -192,6 +311,13 @@ async function addFeatureInfo(cata, id, element1) {
   let img = document.createElement("img");
   img.setAttribute("src", "https://res.sdta.cn/" + res.default_photo)
   element.appendChild(img);
+  let btn = document.createElement("button");
+  btn.setAttribute("id", "gohere");
+  btn.innerText = "去这里"
+  element.appendChild(btn)
+  btn.addEventListener("click", () => {
+    getRoute();
+  })
   element1.innerHTML = "";
   element1.appendChild(element)
   return true
@@ -200,6 +326,78 @@ async function getInfo(cata, id) {
   return $Ajax.post(cata == "scenic" ? "/scenic/info" : "/rest/info", {
     "id": id
   })
+}
+
+function getRoute() {
+  if (!geoLocation.getTracking()) {
+    geoLocation.setTracking(true);
+    geoLocation.once("change:position", () => {
+      let origin = geoLocation.getPosition();
+      geoLocation.setTracking(false);
+      let url = "https://restapi.amap.com/v3/direction/walking?" +
+        "origin=" + origin.map(x => {
+          return x.toFixed(6)
+        }).toString() + "&" +
+        "destination=" + store.state.activePoint + "&" +
+        "output=json&key=12a571a01faffd202d45ec15b944583a";
+      axios.get(url).then(res => {
+        let steps = res.data.route.paths[0].steps
+        let arr = new Array(steps.length);
+        for (let i = 0; i < steps.length; i++) {
+          arr[i] = steps[i].polyline.split(";").map(x => {
+            return x.split(",").map(y => {
+              return parseFloat(y)
+            })
+          });
+        }
+        multiLine(arr);
+      });
+    })
+  } else {
+    let url = "https://restapi.amap.com/v3/direction/driving?" +
+      "origin=" + store.state.position + "&" +
+      "destination=" + store.state.activePoint + "&" +
+      "output=json&key=12a571a01faffd202d45ec15b944583a"
+    axios.get(url).then(res => {
+      let steps = res.data.route.paths[0].steps
+      let arr = new Array(steps.length);
+      for (let i = 0; i < steps.length; i++) {
+        arr[i] = steps[i].polyline.split(";").map(x => {
+          return x.split(",").map(y => {
+            return parseFloat(y)
+          })
+        });
+      }
+
+      multiLine(arr)
+    })
+  }
+}
+let route;
+
+function multiLine(arr) {
+  map.removeLayer(route);
+  let lines = new Array();
+  for (let i = 0; i < arr.length; i++) {
+    lines[i] = new LineString(arr[i])
+  }
+
+  let source = new VectorSource({
+    features: [new Feature({
+      geometry: new MultiLineString(lines)
+    })]
+  });
+
+  route = new VectorLayer({
+    source: source,
+    style: new Style({
+      stroke: new Stroke({
+        width: 4,
+        color: "red"
+      })
+    })
+  });
+  map.addLayer(route)
 }
 export {
   mapInit,

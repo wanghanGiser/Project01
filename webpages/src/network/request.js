@@ -2,21 +2,33 @@
  * 封装axios
  * by王涵
  */
+import axios from 'axios'
 
- import axios from 'axios'
+import store from "@/store/store"
+const instance = axios.create({
+  baseURL: "/api"
+})
 
- const instance=axios.create({
-   baseURL:""
- })
- instance.interceptors.request.use(function (config) {
+instance.interceptors.request.use(function (config) {
   // Do something before request is sent
-  if(localStorage.getItem("token"))
-  config.headers['Authorization'] = localStorage.getItem("token");
+  if (localStorage.getItem("token"))
+    config.headers['Authorization'] = localStorage.getItem("token");
   return config;
-  //这里经常搭配token使用，将token值配置到tokenkey中，将tokenkey放在请求头中
 }, function (error) {
-  // Do something with request error
   return Promise.reject(error);
 });
-
- export default instance
+instance.interceptors.response.use(res => {  
+  if (!res.headers.token) {
+    if (localStorage.getItem("token")) {
+      localStorage.removeItem("token")
+    }
+    store.commit("setLogStatus");
+    return res;
+  }
+  localStorage.setItem("token",res.headers.token);
+  store.commit("setLogStatus");
+  return res;
+}, err => {
+  return Promise.reject(err)
+})
+export default instance

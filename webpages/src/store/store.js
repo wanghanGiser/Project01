@@ -10,22 +10,27 @@ const store={
     menuShow:false,
     pageNum:1,
     overLay:{},
-    scenic_list:[]
+    scenic_list:[],
+    activePoint:"",
+    position:"118.3506988, 35.3032403"
   },
   getters:{
     pageCount(state){
       return state.cata=="scenic"?19:14
-    },
-    
-      
-    
+    }
   },
   mutations:{
+    setPosition(state,posi){
+      state.activePoint=posi
+    },
+    setLocal(state,posi){
+      state.position=posi
+    },
     setOverLay(state,overLay){
       state.overLay=overLay
     },
     setLogStatus(state){
-      state.isLogin=!state.isLogin
+      state.isLogin=localStorage.getItem("token")?true:false
     },
     setCata(state,optS){
       state.cata=optS

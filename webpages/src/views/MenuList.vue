@@ -1,17 +1,17 @@
 <template>
-  <div id="menu-list" :style="showMenu" @click.stop>
+  <div id="menu-list" :style="showMenu" @click.stop="userShow=false">
     <div id="buffer">
       <tab-button @childEmit="menuList()" v-show="!$store.state.menuShow" />
       <menu-header>
         <div style="display:flex;align-items:center">
-          <user-image @click.native="exit()" />
-          <div v-show="$store.state.isLogin">
+          <user-image :isShow="userShow" @itemClick="itemClick()"/>
+          <div v-show="!$store.state.isLogin">
             <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
             <a href="javascript:void(0);" @click="logReg(false)">注册</a>
           </div>
           <a href="javascript:void(0);" v-show="$store.state.isLogin">{{username}}</a>
         </div>
-        <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" />
+        <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" @click.native="toFavo()"/>
       </menu-header>
       <list-box @itemClick="itemClick()" />
     </div>
@@ -28,7 +28,9 @@ import ImageBtn from "@/components/common/ImageBtn.vue";
 export default {
   data() {
     return {
-      isShow: false
+      isShow: false,
+      userShow:false,
+      windowSize:window.matchMedia('(max-width:768px)').matches
     };
   },
   props: {
@@ -48,36 +50,44 @@ export default {
     menuList() {
       this.$store.commit("setMenuShow");
     },
-    exit() {
-      localStorage.removeItem("token");
-      this.$store.commit("setLogStatus");
-    },
+    
     logReg(bool) {
       this.$emit("toLogReg", bool);
     },
     itemClick() {
       this.$store.commit("setMenuShow");
+    },
+    toFavo(){
+      this.itemClick()
+      if(this.$route.path!="/favorites"){
+        this.$router.push({path:"/favorites"})
+      }
     }
   },
   computed: {
     showMenu() {
       return {
-        left: this.$store.state.menuShow ? "0" : "-300px"
+        transform:this.windowSize? (this.$store.state.menuShow ? "translateX(0)" : "translateX(-300px)"):"none"
       };
     }
   },
-  mounted() {}
+  mounted() {
+    window.onresize=()=>{
+      this.windowSize=window.matchMedia('(max-width:768px)').matches
+    }
+  }
 };
 </script>
 
 <style scoped>
 #menu-list {
-  transition: left 0.4s ease-in-out;
+  transition: transform 0.4s ease-in-out;
   height: 100vh;
   float: left;
   color: #747d8c;
   background-color: #f1f2f6;
   box-shadow: 0 0 3px #000;
+  display: table;
 }
 
 @media all and (max-width: 768px) {
@@ -85,7 +95,7 @@ export default {
     width: 300px;
     position: absolute;
     z-index: 2;
-    left: -300px;
+    transform: translateX(-300px);
   }
 }
 @media all and (min-width: 769px) and (max-width: 992px) {

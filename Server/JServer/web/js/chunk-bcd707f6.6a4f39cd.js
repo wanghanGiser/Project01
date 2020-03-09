@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-bcd707f6"],{"0bbb":function(n,t,a){"use strict";a.r(t);var c=function(){var n=this,t=n.$createElement,a=n._self._c||t;return a("div",{attrs:{id:"favo"}},[n._v(" 这是收藏夹 ")])},e=[],u={},i=u,r=(a("67b1"),a("2877")),s=Object(r["a"])(i,c,e,!1,null,null,null);t["default"]=s.exports},"67b1":function(n,t,a){"use strict";var c=a("f0a5"),e=a.n(c);e.a},f0a5:function(n,t,a){}}]);
+//# sourceMappingURL=chunk-bcd707f6.6a4f39cd.js.map

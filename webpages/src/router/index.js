@@ -11,6 +11,14 @@ const routes = [{
   {
     path: "/chart",
     component: () => import("@/views/Chart.vue")
+  },
+  {
+    path: "/favorites",
+    component: () => import("@/views/favorites.vue")
+  },
+  {
+    path: "/userinfo",
+    component:()=>import("@/views/userInfo.vue")
   }
 ]
 

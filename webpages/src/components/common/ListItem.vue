@@ -6,61 +6,87 @@
 
     <div id="descrip">
       <h4>{{title}}</h4>
-      <p>
-        {{content}}
-      </p>
+      <p>{{content}}</p>
     </div>
   </div>
 </template>
 
 <script>
-import {addFeatureInfo} from "@/js/map-load.js"
+import { addFeatureInfo } from "@/js/map-load.js";
 export default {
   data() {
     return {};
   },
   props: {
-    id:{
-      type:String,
-      default:""
+    id: {
+      type: String,
+      default: ""
     },
     src: {
       type: String,
       default: "http://www.sdta.cn/uploads/157225882496-3.png"
     },
-    name_cn:{
-      type:String,
-      default:""
+    name_cn: {
+      type: String,
+      default: ""
     },
-    description:{
-      type:String,
-      default:""
+    description: {
+      type: String,
+      default: ""
     },
-    location:{
-      type:String,
-      required:true
+    location: {
+      type: String,
+      required: true
     }
   },
-  methods:{
-    changeMap(){
+  methods: {
+    changeMap() {
       this.$emit("itemClick");
+      this.$store.commit("setPosition", this.location);
+      if (this.$route.path != "/") {
+        this.$router.push({ path: "/" });
+        setTimeout(() => {
+          addFeatureInfo(
+            this.$store.state.cata,
+            this.id,
+            document.getElementById("popup")
+          ).then(res => {
+            if (res) {
+              this.$store.state.overLay.setPosition(
+                parseFloat(this.location.split(",")).map((x, i) => {
+                  if (i == 0) {
+                    return x + 0.0057;
+                  }
+                  return x - 0.00035;
+                })
+              );
+            }
+          });
+        }, 500);
+        return;
+      }
+
       addFeatureInfo(
-          this.$store.state.cata,
-          this.id,
-          document.getElementById("popup")
-        ).then(res => {
-          if (res) {
-            this.$store.state.overLay.setPosition(this.location.split(","));
-          }
-        });
+        this.$store.state.cata,
+        this.id,
+        document.getElementById("popup")
+      ).then(res => {
+        if (res) {
+          this.$store.state.overLay.setPosition(this.location.split(","));
+        }
+      });
     }
   },
-  computed:{
-    title(){
-      return this.name_cn.length>9?this.name_cn.substring(0,9)+"...":this.name_cn;
+  computed: {
+    title() {
+      return this.name_cn.length > 9
+        ? this.name_cn.substring(0, 9) + "..."
+        : this.name_cn;
     },
-    content(){
-      return this.description.length>35?this.description.substring(0,35)+"...":this.description;
+    content() {
+      return this.description.length > 35
+        ? this.description.substring(0, 35) + "..."
+        : this.description;
     }
   }
 };
@@ -73,15 +99,15 @@ export default {
   cursor: pointer;
   height: 5em;
   display: flex;
-  margin-top: .5em;
+  margin-top: 0.5em;
   align-items: center;
-  background-color: #ffffff
+  background-color: #ffffff;
 }
-#list-item:hover{
-  box-shadow: 0 0 5px #000
+#list-item:hover {
+  box-shadow: 0 0 5px #000;
 }
-#list-item:hover h4{
-  color: #0984e3
+#list-item:hover h4 {
+  color: #0984e3;
 }
 #imageBox {
   flex: 4;
@@ -98,17 +124,17 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-content: center
+  align-content: center;
 }
-h4{
-  font-size: .8em;
+h4 {
+  font-size: 0.8em;
   font-weight: 500;
   padding: 1px 7px;
   color: #2d3436;
   position: relative;
 }
-p{
-  font-size: .7em;
+p {
+  font-size: 0.7em;
   padding: 7px;
   overflow: hidden;
   position: relative;

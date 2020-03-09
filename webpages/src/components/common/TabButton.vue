@@ -23,10 +23,11 @@ export default {
 #tab-button {
   height: 0px;
   position: relative;
+  background-color: rgba(201, 209, 221, 0.3);
 }
 .tab-button {
   display: none;
-  background-color: #27ae60;
+  background-color: rgba(75, 101, 132,.4);
   border-radius: 0 2px 2px 0;
   box-sizing: border-box;
   background-size: 100% 50%;

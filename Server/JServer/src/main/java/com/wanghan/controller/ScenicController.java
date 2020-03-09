@@ -23,12 +23,11 @@ public class ScenicController {
 
     @PostMapping("/scenic_list_limit")
     public List<Map<String, String>> getScenics(@RequestBody Map<String, Integer> num, HttpServletRequest req) {
-        System.out.println(new Date() + "------" + (num.get("num") - 1) * 10);
         return service.getScenics((num.get("num") - 1) * 10);
     }
 
     @GetMapping("/scenic_list")
-    public List<Map<String, String>> getAllScenics() {
+    public List<Map<String, String>> getAllScenics(HttpServletRequest req) {
         return service.getAllScenics();
     }
 

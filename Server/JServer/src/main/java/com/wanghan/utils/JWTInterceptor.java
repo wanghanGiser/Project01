@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -27,6 +28,8 @@ public class JWTInterceptor implements HandlerInterceptor {
                 User user=service.selectUserById(uID);
                 if(uname.equals(user.getU_name())){
                     request.setAttribute("isLogin",true);
+                    response.setHeader("Access-Control-Expose-Headers","token");
+                    response.setHeader("token",JWTUtils.createJWT(uID,uname));
                     return true;
                 }
             }

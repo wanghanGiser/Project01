@@ -6,8 +6,10 @@ import com.wanghan.service.UserService;
 import com.wanghan.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
@@ -22,14 +24,17 @@ public class UserInfoController {
 
 //    requestParam接受的前端格式不能为json
     @PostMapping("/login")
-    public LoginRegStatus login(@RequestBody Map<String,String> map, HttpServletRequest req){
+    public LoginRegStatus login(@RequestBody Map<String,String> map, HttpServletRequest req, HttpServletResponse response ){
         status=new LoginRegStatus();
         User statu=service.selectUserByName(map.get("name"));
         if(statu!=null){
             if(statu.getU_pwd().equals(map.get("pwd"))){
                 status.setStatus(true);
                 status.setLogInfo("ok");
-                status.setToken(JWTUtils.createJWT(statu.getU_id(),map.get("name")));
+                String token=JWTUtils.createJWT(statu.getU_id(),map.get("name"));
+                status.setToken(token);
+                response.setHeader("Access-Control-Expose-Headers","token");
+                response.setHeader("token",token);
                 return status;
             }
             status.setStatus(false);
@@ -55,5 +60,12 @@ public class UserInfoController {
         status.setStatus(false);
         status.setLogInfo("userexist");
         return status;
+    }
+    @GetMapping("/islogin")
+    public boolean isLogin(HttpServletRequest request){
+        if((Boolean) request.getAttribute("isLogin")){
+            return true;
+        }
+        return false;
     }
 }

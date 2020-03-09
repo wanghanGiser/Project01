@@ -43,12 +43,13 @@ export default {
   },
   async mounted() {
     this.map = mapInit();
-    this.scenicLayer = await getPoints(this.$store.state.cata);
+    this.scenicLayer = await getPoints(this.$store.state.cata, this.map);
 
     this.map.addLayer(this.scenicLayer);
     let popupOverLay = setOverLay("popup");
-    this.$store.commit("setOverLay",popupOverLay);
+    this.$store.commit("setOverLay", popupOverLay);
     this.map.addOverlay(popupOverLay);
+    document.getElementById("popup").style.visibility = "visible";
     let self = this;
     this.map.on("click", function(evt) {
       let feature = self.map.forEachFeatureAtPixel(evt.pixel, function(
@@ -58,21 +59,26 @@ export default {
       });
       if (feature && feature.get("features")) {
         var coordinates = feature.getGeometry().getCoordinates();
-
+        self.$store.commit("setPosition", coordinates.toString());
         feature = feature.get("features").sort(function(a, b) {
           if (a.get("level") > b.get("level")) {
             return -1;
           }
           return 1;
         })[0];
-        
+
         addFeatureInfo(
           self.$store.state.cata,
           feature.get("sr_id"),
           document.getElementById("popup")
         ).then(res => {
           if (res) {
-            popupOverLay.setPosition(coordinates);
+            popupOverLay.setPosition(coordinates.map((x, i) => {
+        if (i == 0) {
+          return x + 0.0057;
+        }
+        return x-0.00035
+      }));
           }
         });
       } else {
@@ -87,6 +93,7 @@ export default {
 #map {
   float: left;
   height: 100vh;
+  overflow: hidden;
 }
 @media screen and (max-width: 768px) {
   #map {
@@ -111,13 +118,15 @@ export default {
 #popup {
   position: absolute;
   background-color: #fff;
-  width: 400px;
-  z-index: 80;
+  width: 500px;
+  z-index: 10;
+  padding: 3px;
+  box-sizing: border-box;
+  visibility: hidden;
   max-width: 90vw;
-  height: 90vh;
-  bottom: 23px;
+  height: 80vh;
+  bottom: 20px;
   left: -50px;
-  padding: 5px;
   border-radius: 10px;
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
 }
@@ -125,7 +134,7 @@ export default {
 #popup::after {
   top: 100%;
   border: solid transparent;
-  content: " ";
+  content: "";
   height: 0;
   width: 0;
   position: absolute;
@@ -149,11 +158,9 @@ export default {
   justify-content: center;
   overflow-x: hidden;
   overflow-y: auto;
-  z-index: 90;
 }
 #popup > div img {
   width: 100%;
-
   max-width: 88vw;
 }
 </style>

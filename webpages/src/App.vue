@@ -70,8 +70,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.state.isLogin = localStorage.getItem("token") == null;
-    document.body.addEventListener("click", () => {      
+    document.body.addEventListener("click", () => {
       if (this.$store.state.menuShow) {
         this.$store.commit("setMenuShow");
       }

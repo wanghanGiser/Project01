@@ -1,5 +1,6 @@
 <template>
   <div id="btn" :title="title" :style="{backgroundImage:image,width:width,height:height}">
+    
   </div>
 </template>
 
@@ -39,4 +40,5 @@ export default {
   background-repeat: no-repeat;
   cursor: pointer;
 }
+
 </style>
