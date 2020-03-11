@@ -8,7 +8,6 @@ import store from "@/store/store"
 const instance = axios.create({
   baseURL: "/api"
 })
-
 instance.interceptors.request.use(function (config) {
   // Do something before request is sent
   if (localStorage.getItem("token"))

@@ -73,12 +73,7 @@ export default {
           document.getElementById("popup")
         ).then(res => {
           if (res) {
-            popupOverLay.setPosition(coordinates.map((x, i) => {
-        if (i == 0) {
-          return x + 0.0057;
-        }
-        return x-0.00035
-      }));
+            popupOverLay.setPosition(coordinates);
           }
         });
       } else {
@@ -125,7 +120,7 @@ export default {
   visibility: hidden;
   max-width: 90vw;
   height: 80vh;
-  bottom: 20px;
+  bottom: 15px;
   left: -50px;
   border-radius: 10px;
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));

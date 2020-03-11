@@ -53,12 +53,7 @@ export default {
           ).then(res => {
             if (res) {
               this.$store.state.overLay.setPosition(
-                parseFloat(this.location.split(",")).map((x, i) => {
-                  if (i == 0) {
-                    return x + 0.0057;
-                  }
-                  return x - 0.00035;
-                })
+                parseFloat(this.location.split(","))
               );
             }
           });

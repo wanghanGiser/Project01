@@ -1,20 +1,15 @@
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import {
-  getWidth,
-  getTopLeft
-} from 'ol/extent';
 import TileLayer from 'ol/layer/Tile';
 import {
   get as getProjection
 } from 'ol/proj';
-import WMTS from 'ol/source/WMTS';
-import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import VectorLayer from 'ol/layer/Vector';
 import {
   Cluster,
-  Vector as VectorSource
+  Vector as VectorSource,
+  XYZ
 } from 'ol/source';
 import GeoJSON from "ol/format/GeoJSON"
 import {
@@ -38,64 +33,18 @@ import axios from 'axios'
 import LineString from 'ol/geom/LineString';
 import MultiLineString from 'ol/geom/MultiLineString';
 
-let geoLocation, map;
+let map;
+const CENTER = [118.3506988, 35.1032403];
 
 function mapInit() {
   var projection = getProjection('EPSG:4326');
-  var projectionExtent = projection.getExtent();
-  var size = getWidth(projectionExtent) / 256;
-  var resolutions = new Array(14);
-  var matrixIds = new Array(14);
-  for (var z = 0; z < 18; ++z) {
-    // generate resolutions and matrixIds arrays for this WMTS
-    resolutions[z] = size / Math.pow(2, z);
-    matrixIds[z] = z;
-  }
   map = new Map({
     layers: [
       new TileLayer({
-        opacity: 0.7,
-        source: new WMTS({
-          name: "中国矢量1-4级",
-          url: "http://t5.tianditu.gov.cn/vec_c/wmts?tk=c5273291d67d7693ff89c724805a11da",
-          layer: "vec",
-          style: "default",
-          matrixSet: "c",
-          format: "tiles",
-          wrapX: true,
-          tileGrid: new WMTSTileGrid({
-            origin: getTopLeft(projectionExtent).map((x, i) => {
-              if (i == 0) {
-                return x +0.0057;
-              }
-              return x-0.00035
-            }),
-            //resolutions: res.slice(0, 15),
-            resolutions: resolutions,
-            matrixIds: matrixIds
-          })
-        })
-      }),
-      new TileLayer({
-        source: new WMTS({
-          name: "中国矢量注记1-4级",
-          url: "http://t0.tianditu.gov.cn/cva_c/wmts?tk=c5273291d67d7693ff89c724805a11da",
-          layer: "cva",
-          style: "default",
-          matrixSet: "c",
-          format: "tiles",
-          wrapX: true,
-          tileGrid: new WMTSTileGrid({
-            origin: getTopLeft(projectionExtent).map((x, i) => {
-              if (i == 0) {
-                return x + 0.0057;
-              }
-              return x-0.00035
-            }),
-            resolutions: resolutions,
-            matrixIds: matrixIds
-          })
-        })
+        source: new XYZ({
+          url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+          wrapX: true
+        }),
       }),
       new VectorLayer({
         source: new VectorSource({
@@ -106,87 +55,43 @@ function mapInit() {
             color: 'rgba(32, 191, 107,0.1)'
           }),
           stroke: new Stroke({
-            color: '#319FD3', //边界颜色
-            width: 1 //边界线条粗细
+            color: '#319FD3',
+            width: 1
           })
         })
       })
     ],
     target: 'map',
     view: new View({
-      center: [118.3506988, 35.3032403],
+      center: CENTER,
       projection: projection,
       zoom: 10,
       minZoom: 4
     })
   });
-  geoLocation = new Geolocation({
-    tracking: false,
+  let geoLocation = new Geolocation({
     trackingOptions: {
-      enableHighAccuracy: true,
-      maximumAge: 10000,
-      timeout: 600000
+      enableHighAccuracy: true
     },
-    projection: map.getView().getProjection(),
+    projection: projection,
   });
-  geoLocation.once("error", function () {
+  geoLocation.setTracking(true);
+  geoLocation.on("change:position", () => {
+    store.commit("setLocation", geoLocation.getPosition().toString())
     geoLocation.setTracking(false);
-    alert("定位失败！请确认是否打开定位权限")
+    geoLocation=null
   })
-  let positionFeature = new Feature();
-  positionFeature.setStyle(new Style({
-    image: new CircleStyle({
-      radius: 12,
-      fill: new Fill({
-        color: '#eb3b5a'
-      }),
-      stroke: new Stroke({
-        color: '#fff',
-        width: 2
-      })
-    })
-  }));
-  geoLocation.on("change:tracking", () => {
-    if (!geoLocation.getTracking()) {
-      map.getView().animate({
-        center: [118.3506988, 35.3032403],
-        zoom: 10
-      });
-      positionFeature.setGeometry(null)
-    }
+  geoLocation.once("error", function () {
+    alert("定位失败！请确认是否开启定位权限");
   })
-  geoLocation.on('change:position', function () {
-    positionFeature.setStyle(new Style({
-      image: new CircleStyle({
-        radius: 12,
-        fill: new Fill({
-          color: '#eb3b5a'
-        }),
-        stroke: new Stroke({
-          color: '#fff',
-          width: 2
-        })
-      })
-    }));
-    let coordinates = geoLocation.getPosition();
-    store.commit("setLocal", coordinates.map(x => {
-      return x.toFixed(6);
-    }).toString())
-    positionFeature.setGeometry(coordinates ?
-      new Point(coordinates) : null);
-    map.getView().animate({
-      center: coordinates,
-      zoom: 15
-    });
-  });
-  new VectorLayer({
-    map: map,
-    source: new VectorSource({
-      features: [positionFeature]
-    })
-  });
   document.getElementById("locate").onclick = function () {
-    geoLocation.setTracking(!geoLocation.getTracking());
+    if (route) {
+      map.removeLayer(route)
+    }
+    map.getView().animate({
+      center: CENTER,
+      zoom: 10
+    });
   }
   return map;
 }
@@ -201,12 +106,7 @@ async function getPoints(cata, map) {
     let name = data[i].name_cn;
     let level = data[i][levelText];
     let feature = new Feature({
-      geometry: new Point(location.map((x, i) => {
-        if (i == 0) {
-          return x + 0.0057;
-        }
-        return x-0.00035
-      })),
+      geometry: new Point(location),
       sr_id: id,
       sr_name: name,
       level: level
@@ -300,6 +200,9 @@ function setOverLay(el) {
   });
 }
 async function addFeatureInfo(cata, id, element1) {
+  store.state.overLay.setPosition(undefined);
+  if (route)
+    map.removeLayer(route)
   let element = document.createElement("div");
   let res = await (await getInfo(cata, id)).data;
   let h1 = document.createElement("h2");
@@ -329,75 +232,95 @@ async function getInfo(cata, id) {
 }
 
 function getRoute() {
-  if (!geoLocation.getTracking()) {
-    geoLocation.setTracking(true);
-    geoLocation.once("change:position", () => {
-      let origin = geoLocation.getPosition();
-      geoLocation.setTracking(false);
-      let url = "https://restapi.amap.com/v3/direction/walking?" +
-        "origin=" + origin.map(x => {
-          return x.toFixed(6)
-        }).toString() + "&" +
-        "destination=" + store.state.activePoint + "&" +
-        "output=json&key=12a571a01faffd202d45ec15b944583a";
-      axios.get(url).then(res => {
-        let steps = res.data.route.paths[0].steps
-        let arr = new Array(steps.length);
-        for (let i = 0; i < steps.length; i++) {
-          arr[i] = steps[i].polyline.split(";").map(x => {
-            return x.split(",").map(y => {
-              return parseFloat(y)
-            })
-          });
-        }
-        multiLine(arr);
+  // let k1="12a571a01faffd202d45ec15b944583a",k2="a7044ddd8924b179d05c4e39bbf8bbcc"
+  store.state.overLay.setPosition(undefined)
+  let url = "https://restapi.amap.com/v3/direction/driving?" +
+    "origin=" +
+    store.state.position + "&" +
+    "destination=" + store.state.activePoint + "&" +
+    "output=json&key=a7044ddd8924b179d05c4e39bbf8bbcc";
+  map.getView().animate({
+    center: store.state.position.split(","),
+    zoom: 12
+  })
+  axios.get(url).then(res => {
+    let steps = res.data.route.paths[0].steps
+    let arr = new Array(steps.length);
+    for (let i = 0; i < steps.length; i++) {
+      arr[i] = steps[i].polyline.split(";").map(x => {
+        return x.split(",").map(y => {
+          return parseFloat(y)
+        })
       });
-    })
-  } else {
-    let url = "https://restapi.amap.com/v3/direction/driving?" +
-      "origin=" + store.state.position + "&" +
-      "destination=" + store.state.activePoint + "&" +
-      "output=json&key=12a571a01faffd202d45ec15b944583a"
-    axios.get(url).then(res => {
-      let steps = res.data.route.paths[0].steps
-      let arr = new Array(steps.length);
-      for (let i = 0; i < steps.length; i++) {
-        arr[i] = steps[i].polyline.split(";").map(x => {
-          return x.split(",").map(y => {
-            return parseFloat(y)
-          })
-        });
-      }
-
-      multiLine(arr)
-    })
-  }
+    }
+    multiLine(arr)
+  })
 }
-let route;
+var route;
 
 function multiLine(arr) {
   map.removeLayer(route);
   let lines = new Array();
+  let start = arr[0][0];
+  let startFea = new Feature({
+    geometry: new Point(start)
+  })
+  startFea.setStyle(new Style({
+    image: new CircleStyle({
+      radius: 15,
+      stroke: new Stroke({
+        color: '#fff'
+      }),
+      fill: new Fill({
+        color: '#fc5c65'
+      })
+    }),
+    text: new Text({
+      text: "起",
+      fill: new Fill({
+        color: "#fff"
+      })
+    })
+  }))
+  let end = arr[arr.length - 1][arr[arr.length - 1].length - 1];
+  let endFea = new Feature({
+    geometry: new Point(end)
+  })
+  endFea.setStyle(new Style({
+    image: new CircleStyle({
+      radius: 15,
+      stroke: new Stroke({
+        color: '#fff'
+      }),
+      fill: new Fill({
+        color: '#fc5c65'
+      })
+    }),
+    text: new Text({
+      text: "终",
+      fill: new Fill({
+        color: "#fff"
+      })
+    })
+  }))
   for (let i = 0; i < arr.length; i++) {
     lines[i] = new LineString(arr[i])
   }
-
   let source = new VectorSource({
     features: [new Feature({
       geometry: new MultiLineString(lines)
-    })]
+    }), startFea, endFea]
   });
-
   route = new VectorLayer({
     source: source,
     style: new Style({
       stroke: new Stroke({
-        width: 4,
-        color: "red"
+        width: 5,
+        color: "#26de81"
       })
     })
   });
-  map.addLayer(route)
+  map.addLayer(route);
 }
 export {
   mapInit,

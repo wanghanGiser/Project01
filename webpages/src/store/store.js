@@ -12,7 +12,7 @@ const store={
     overLay:{},
     scenic_list:[],
     activePoint:"",
-    position:"118.3506988, 35.3032403"
+    position:""
   },
   getters:{
     pageCount(state){
@@ -20,11 +20,11 @@ const store={
     }
   },
   mutations:{
+    setLocation(state,loca){
+      state.position=loca
+    },
     setPosition(state,posi){
       state.activePoint=posi
-    },
-    setLocal(state,posi){
-      state.position=posi
     },
     setOverLay(state,overLay){
       state.overLay=overLay
