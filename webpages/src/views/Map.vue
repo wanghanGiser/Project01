@@ -59,7 +59,9 @@ export default {
       });
       if (feature && feature.get("features")) {
         var coordinates = feature.getGeometry().getCoordinates();
-        self.$store.commit("setPosition", coordinates.toString());
+        self.$store.commit("setPosition", coordinates.map(x=>{
+          return x.toFixed(6)
+        }).toString());
         feature = feature.get("features").sort(function(a, b) {
           if (a.get("level") > b.get("level")) {
             return -1;
@@ -113,7 +115,7 @@ export default {
 #popup {
   position: absolute;
   background-color: #fff;
-  width: 500px;
+  width: 466px;
   z-index: 10;
   padding: 3px;
   box-sizing: border-box;
@@ -154,8 +156,18 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
 }
-#popup > div img {
+#popup > div>img {
   width: 100%;
   max-width: 88vw;
+}
+#popup >div>button{
+  border: none;
+  outline: none;
+  background-color: #45aaf2;
+  height: 2em;
+  line-height: 2em;
+  padding: 0 5px;
+  text-align: center;
+  color: #fff;
 }
 </style>

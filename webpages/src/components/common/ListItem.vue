@@ -52,9 +52,7 @@ export default {
             document.getElementById("popup")
           ).then(res => {
             if (res) {
-              this.$store.state.overLay.setPosition(
-                parseFloat(this.location.split(","))
-              );
+              this.$store.state.overLay.setPosition(this.location.split(","));
             }
           });
         }, 500);

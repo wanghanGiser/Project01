@@ -9,7 +9,7 @@ import VectorLayer from 'ol/layer/Vector';
 import {
   Cluster,
   Vector as VectorSource,
-  XYZ
+  WMTS
 } from 'ol/source';
 import GeoJSON from "ol/format/GeoJSON"
 import {
@@ -30,6 +30,11 @@ import CircleStyle from 'ol/style/Circle';
 import HeatMap from "ol/layer/Heatmap"
 import store from "@/store/store"
 import axios from 'axios'
+import {
+  getWidth,
+  getTopLeft
+} from 'ol/extent';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LineString from 'ol/geom/LineString';
 import MultiLineString from 'ol/geom/MultiLineString';
 
@@ -38,12 +43,47 @@ const CENTER = [118.3506988, 35.1032403];
 
 function mapInit() {
   var projection = getProjection('EPSG:4326');
+  const projectionExtent = projection.getExtent();
+  const size = getWidth(projectionExtent) / 256;
+  let resolutions = [];
+  let matrixIds = [];
+  for (let z = 2; z < 19; ++z) {
+    resolutions[z] = size / Math.pow(2, z);
+    matrixIds[z] = z
+  }
   map = new Map({
     layers: [
       new TileLayer({
-        source: new XYZ({
-          url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
-          wrapX: true
+        source: new WMTS({
+          name: "中国矢量1-4级",
+          url: "http://t5.tianditu.gov.cn/vec_c/wmts?tk=c5273291d67d7693ff89c724805a11da",
+          layer: "vec",
+          style: "default",
+          matrixSet: "c",
+          format: "tiles",
+          wrapX: true,
+          tileGrid: new WMTSTileGrid({
+            origin: getTopLeft(projectionExtent),
+            //resolutions: res.slice(0, 15),
+            resolutions: resolutions,
+            matrixIds: matrixIds
+          })
+        }),
+      }),
+      new TileLayer({
+        source: new WMTS({
+          name: "中国矢量注记1-4级",
+          url: "http://t0.tianditu.gov.cn/cva_c/wmts?tk=c5273291d67d7693ff89c724805a11da",
+          layer: "cva",
+          style: "default",
+          matrixSet: "c",
+          format: "tiles",
+          wrapX: true,
+          tileGrid: new WMTSTileGrid({
+            origin: getTopLeft(projectionExtent),
+            resolutions: resolutions,
+            matrixIds: matrixIds
+          })
         }),
       }),
       new VectorLayer({
@@ -52,7 +92,7 @@ function mapInit() {
         }),
         style: new Style({ //显示的颜色
           fill: new Fill({
-            color: 'rgba(32, 191, 107,0.1)'
+            color: 'rgba(155, 191, 107,0.1)'
           }),
           stroke: new Stroke({
             color: '#319FD3',
@@ -71,7 +111,8 @@ function mapInit() {
   });
   let geoLocation = new Geolocation({
     trackingOptions: {
-      enableHighAccuracy: true
+      enableHighAccuracy: true,
+      timeout: 5000
     },
     projection: projection,
   });
@@ -79,10 +120,10 @@ function mapInit() {
   geoLocation.on("change:position", () => {
     store.commit("setLocation", geoLocation.getPosition().toString())
     geoLocation.setTracking(false);
-    geoLocation=null
+    geoLocation = null
   })
   geoLocation.once("error", function () {
-    alert("定位失败！请确认是否开启定位权限");
+    alert("定位失败！请确认是否开启定位权限,开启后请刷新页面重试。");
   })
   document.getElementById("locate").onclick = function () {
     if (route) {
@@ -206,23 +247,25 @@ async function addFeatureInfo(cata, id, element1) {
   let element = document.createElement("div");
   let res = await (await getInfo(cata, id)).data;
   let h1 = document.createElement("h2");
+
   h1.innerText = res.name_cn;
   element.appendChild(h1);
+  let btn = document.createElement("button");
+  btn.setAttribute("id", "gohere");
+  btn.innerText = "去这里"
+  element.appendChild(btn);
+  btn.addEventListener("click", () => {
+    getRoute();
+  })
   let p = document.createElement("p");
   p.innerText = res.description;
   element.appendChild(p);
   let img = document.createElement("img");
   img.setAttribute("src", "https://res.sdta.cn/" + res.default_photo)
   element.appendChild(img);
-  let btn = document.createElement("button");
-  btn.setAttribute("id", "gohere");
-  btn.innerText = "去这里"
-  element.appendChild(btn)
-  btn.addEventListener("click", () => {
-    getRoute();
-  })
+
   element1.innerHTML = "";
-  element1.appendChild(element)
+  element1.appendChild(element);
   return true
 }
 async function getInfo(cata, id) {
@@ -232,26 +275,31 @@ async function getInfo(cata, id) {
 }
 
 function getRoute() {
-  // let k1="12a571a01faffd202d45ec15b944583a",k2="a7044ddd8924b179d05c4e39bbf8bbcc"
+  if (store.state.position == "") {
+    alert("未获取到定位")
+    return;
+  }
   store.state.overLay.setPosition(undefined)
-  let url = "https://restapi.amap.com/v3/direction/driving?" +
-    "origin=" +
-    store.state.position + "&" +
-    "destination=" + store.state.activePoint + "&" +
-    "output=json&key=a7044ddd8924b179d05c4e39bbf8bbcc";
   map.getView().animate({
     center: store.state.position.split(","),
     zoom: 12
   })
+  let url = 'http://api.tianditu.gov.cn/drive?postStr={%22orig%22:%22' +
+    store.state.position +
+    '%22,%22dest%22:%22' +
+    store.state.activePoint +
+    '54%22,%22style%22:%220%22}&type=search&tk=125199f53b84922a15d3e7e5e833752c';
   axios.get(url).then(res => {
-    let steps = res.data.route.paths[0].steps
-    let arr = new Array(steps.length);
-    for (let i = 0; i < steps.length; i++) {
-      arr[i] = steps[i].polyline.split(";").map(x => {
+    let parser = new DOMParser();
+    let domDOC = parser.parseFromString(res.data, "text/xml");
+    let arr = new Array();
+    let arr1 = domDOC.getElementsByTagName("streetLatLon");
+    for (let i = 0; i < arr1.length; i++) {
+      arr[i] = arr1[i].innerHTML.replace(/;$/, "").split(";").map(x => {
         return x.split(",").map(y => {
           return parseFloat(y)
         })
-      });
+      })
     }
     multiLine(arr)
   })
@@ -260,8 +308,7 @@ var route;
 
 function multiLine(arr) {
   map.removeLayer(route);
-  let lines = new Array();
-  let start = arr[0][0];
+  let start = store.state.position.split(",");
   let startFea = new Feature({
     geometry: new Point(start)
   })
@@ -282,7 +329,7 @@ function multiLine(arr) {
       })
     })
   }))
-  let end = arr[arr.length - 1][arr[arr.length - 1].length - 1];
+  let end = store.state.activePoint.split(",");
   let endFea = new Feature({
     geometry: new Point(end)
   })
@@ -303,6 +350,7 @@ function multiLine(arr) {
       })
     })
   }))
+  let lines = new Array();
   for (let i = 0; i < arr.length; i++) {
     lines[i] = new LineString(arr[i])
   }
@@ -311,6 +359,7 @@ function multiLine(arr) {
       geometry: new MultiLineString(lines)
     }), startFea, endFea]
   });
+
   route = new VectorLayer({
     source: source,
     style: new Style({
