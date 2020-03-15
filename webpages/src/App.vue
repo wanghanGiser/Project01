@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <container v-if="isShow">
-      <login-reg @close="close()" :isReg="isReg" @submit="logOrReg(arguments)"/>
+      <login-reg @close="close()" :isReg="isReg" @submit="logOrReg(arguments)" />
     </container>
     <v-touch v-on:swipeleft="onSwipeLeft">
-      <menu-list @toLogReg="toLogReg($event)" :username="username"/>
-    </v-touch> 
+      <menu-list @toLogReg="toLogReg($event)" :username="username" />
+    </v-touch>
     <div style="float:left">
       <router-view />
       <jump-to />
@@ -22,7 +22,7 @@ export default {
     return {
       isShow: false,
       isReg: false,
-      username:""
+      username: ""
     };
   },
   components: {
@@ -49,23 +49,23 @@ export default {
           .then(res => {
             console.log(res.data);
           });
-      } else {
-        this.$ajax
-          .post("/user/login", {
-            name: args[1].username,
-            pwd: args[1].password
-          })
-          .then(res => {
-            if (res.data.token && res.data.token != "") {
-              localStorage.setItem("token", res.data.token);
-              this.$store.commit("setLogStatus");
-              this.username=args[1].username;
-              this.isShow = !this.isShow;
-            }
-          });
+        return;
       }
+      this.$ajax
+        .post("/user/login", {
+          name: args[1].username,
+          pwd: args[1].password
+        })
+        .then(res => {
+          if (res.data.token && res.data.token != "") {
+            localStorage.setItem("token", res.data.token);
+            this.$store.commit("setLogStatus");
+            this.username = args[1].username;
+            this.isShow = !this.isShow;
+          }
+        });
     },
-    onSwipeLeft(){
+    onSwipeLeft() {
       this.$store.commit("setMenuShow");
     }
   },
@@ -74,6 +74,9 @@ export default {
       if (this.$store.state.menuShow) {
         this.$store.commit("setMenuShow");
       }
+    });
+    this.$ajax.get("/user/info").then(res => {
+      if(this.$store.state.isLogin) this.username=res.data.name;
     });
   }
 };

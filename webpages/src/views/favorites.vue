@@ -1,12 +1,24 @@
 <template>
   <div id="favo">
-    这是收藏夹
+    这是收藏夹<br/>
+    {{datas}}
   </div>
 </template>
 
 <script>
 export default {
-
+  data(){
+    return{
+      datas:null
+    }
+  },
+  beforeCreate(){
+    this.$ajax.get("/user/getfav").then(res=>{
+      console.log(res.data);
+      
+      this.datas=res.data
+    })
+  }
 }
 </script>
 

@@ -5,7 +5,10 @@ import TileLayer from 'ol/layer/Tile';
 import {
   get as getProjection
 } from 'ol/proj';
-import VectorLayer from 'ol/layer/Vector';
+import {
+  Vector as VectorLayer,
+  Heatmap
+} from 'ol/layer';
 import {
   Cluster,
   Vector as VectorSource,
@@ -27,7 +30,6 @@ import {
 } from 'ol';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
-import HeatMap from "ol/layer/Heatmap"
 import store from "@/store/store"
 import axios from 'axios'
 import {
@@ -38,11 +40,10 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LineString from 'ol/geom/LineString';
 import MultiLineString from 'ol/geom/MultiLineString';
 
-let map;
 const CENTER = [118.3506988, 35.1032403];
-
+const projection = getProjection('EPSG:4326');
 function mapInit() {
-  var projection = getProjection('EPSG:4326');
+  
   const projectionExtent = projection.getExtent();
   const size = getWidth(projectionExtent) / 256;
   let resolutions = [];
@@ -51,7 +52,7 @@ function mapInit() {
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] = z
   }
-  map = new Map({
+  let map = new Map({
     layers: [
       new TileLayer({
         source: new WMTS({
@@ -109,6 +110,16 @@ function mapInit() {
       minZoom: 4
     })
   });
+  document.getElementById("locate").addEventListener("click", function () {
+    map.getView().animate({
+      center: CENTER,
+      zoom: 10
+    });
+  })
+  return map;
+}
+
+function getLocation() {
   let geoLocation = new Geolocation({
     trackingOptions: {
       enableHighAccuracy: true,
@@ -125,18 +136,8 @@ function mapInit() {
   geoLocation.once("error", function () {
     alert("定位失败！请确认是否开启定位权限,开启后请刷新页面重试。");
   })
-  document.getElementById("locate").onclick = function () {
-    if (route) {
-      map.removeLayer(route)
-    }
-    map.getView().animate({
-      center: CENTER,
-      zoom: 10
-    });
-  }
-  return map;
 }
-async function getPoints(cata, map) {
+async function getPoints(cata) {
   let idText = cata == "scenic" ? "scenic_id" : "restaurant_id";
   let levelText = cata == "scenic" ? "level_for_order" : "rest_level"
   let data = (await getData(cata)).data;
@@ -163,9 +164,6 @@ async function getPoints(cata, map) {
     distance: 25,
     source: source
   })
-
-
-
 
   let layer = new VectorLayer({
     source: clusterSource,
@@ -197,31 +195,6 @@ async function getPoints(cata, map) {
       return style;
     }
   })
-  let first = true;
-  let heatmap;
-  document.getElementById("heat-map").onclick = function () {
-    layer.setVisible(!layer.getVisible())
-    if (first) {
-      heatmap = new HeatMap({
-        source: clusterSource,
-        blur: 5,
-        radius: 10,
-        weight: function (feature) {
-          return parseInt(feature.get("features").sort(function (a, b) {
-            if (a.get("level") > b.get("level")) {
-              return -1;
-            }
-            return 1;
-          })[0].get("level").substr(0, 1)) / 5;
-        },
-        visible: true
-      })
-      map.addLayer(heatmap);
-      first = false;
-    } else {
-      heatmap.setVisible(!heatmap.getVisible());
-    }
-  }
   return layer
 }
 async function getData(cata) {
@@ -240,33 +213,41 @@ function setOverLay(el) {
     }
   });
 }
-async function addFeatureInfo(cata, id, element1) {
-  store.state.overLay.setPosition(undefined);
-  if (route)
-    map.removeLayer(route)
-  let element = document.createElement("div");
-  let res = await (await getInfo(cata, id)).data;
-  let h1 = document.createElement("h2");
 
-  h1.innerText = res.name_cn;
-  element.appendChild(h1);
-  let btn = document.createElement("button");
-  btn.setAttribute("id", "gohere");
-  btn.innerText = "去这里"
-  element.appendChild(btn);
-  btn.addEventListener("click", () => {
-    getRoute();
+function setHeatMap(layer) {
+  return getHeatMap(layer)
+}
+
+function getfeaStyle(feature) {
+  return (
+    (parseInt(
+      feature.get("features").sort(function (a, b) {
+        if (a.get("level") > b.get("level")) {
+          return -1;
+        }
+        return 1;
+      })[0]
+      .get("level")
+      .substr(0, 1)
+    ) + 2) / 7
+  );
+}
+
+function getHeatMap(layer) {
+  return new Heatmap({
+    source: layer.getSource(),
+    blur: 5,
+    radius: 10,
+    weight: function (feature) {
+      return getfeaStyle(feature)
+    },
+    visible: true
   })
-  let p = document.createElement("p");
-  p.innerText = res.description;
-  element.appendChild(p);
-  let img = document.createElement("img");
-  img.setAttribute("src", "https://res.sdta.cn/" + res.default_photo)
-  element.appendChild(img);
-
-  element1.innerHTML = "";
-  element1.appendChild(element);
-  return true
+}
+async function addFeatureInfo(cata, id) {
+  store.state.overLay.setPosition(undefined);
+  let res = await (await getInfo(cata, id)).data;
+  return res
 }
 async function getInfo(cata, id) {
   return $Ajax.post(cata == "scenic" ? "/scenic/info" : "/rest/info", {
@@ -274,40 +255,33 @@ async function getInfo(cata, id) {
   })
 }
 
-function getRoute() {
+async function getRoute() {
   if (store.state.position == "") {
     alert("未获取到定位")
-    return;
+    return null;
   }
   store.state.overLay.setPosition(undefined)
-  map.getView().animate({
-    center: store.state.position.split(","),
-    zoom: 12
-  })
   let url = 'http://api.tianditu.gov.cn/drive?postStr={%22orig%22:%22' +
     store.state.position +
     '%22,%22dest%22:%22' +
     store.state.activePoint +
     '54%22,%22style%22:%220%22}&type=search&tk=125199f53b84922a15d3e7e5e833752c';
-  axios.get(url).then(res => {
-    let parser = new DOMParser();
-    let domDOC = parser.parseFromString(res.data, "text/xml");
-    let arr = new Array();
-    let arr1 = domDOC.getElementsByTagName("streetLatLon");
-    for (let i = 0; i < arr1.length; i++) {
-      arr[i] = arr1[i].innerHTML.replace(/;$/, "").split(";").map(x => {
-        return x.split(",").map(y => {
-          return parseFloat(y)
-        })
+  let res = await axios.get(url)
+  let parser = new DOMParser();
+  let domDOC = parser.parseFromString(res.data, "text/xml");
+  let arr = new Array();
+  let arr1 = domDOC.getElementsByTagName("streetLatLon");
+  for (let i = 0; i < arr1.length; i++) {
+    arr[i] = arr1[i].innerHTML.replace(/;$/, "").split(";").map(x => {
+      return x.split(",").map(y => {
+        return parseFloat(y)
       })
-    }
-    multiLine(arr)
-  })
+    })
+  }
+  return multiLine(arr);
 }
-var route;
 
 function multiLine(arr) {
-  map.removeLayer(route);
   let start = store.state.position.split(",");
   let startFea = new Feature({
     geometry: new Point(start)
@@ -360,7 +334,7 @@ function multiLine(arr) {
     }), startFea, endFea]
   });
 
-  route = new VectorLayer({
+  let route = new VectorLayer({
     source: source,
     style: new Style({
       stroke: new Stroke({
@@ -369,11 +343,14 @@ function multiLine(arr) {
       })
     })
   });
-  map.addLayer(route);
+  return route
 }
 export {
   mapInit,
   getPoints,
   setOverLay,
-  addFeatureInfo
+  addFeatureInfo,
+  setHeatMap,
+  getRoute,
+  getLocation
 };

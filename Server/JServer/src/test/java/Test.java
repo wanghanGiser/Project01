@@ -16,8 +16,11 @@ public class Test {
     public void test(){
         ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
         UserService mapper=context.getBean("userServiceImpl", UserService.class);
-        User u=new User("wang2han","wanghan2pwd","2,4,5,6","/ret/dsfs");
-        System.out.println(mapper.selectPwdByName("wanghan"));
+        System.out.println(mapper.selectFavoritesById(5).split(";")[1]);
+        String str=";";
+        String bu="WWW";
+        System.out.println(bu+str);
+        System.out.println(str+bu);
     }
     @org.junit.Test
     public void testScenic(){

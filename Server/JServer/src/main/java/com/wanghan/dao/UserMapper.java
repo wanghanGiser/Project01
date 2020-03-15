@@ -16,4 +16,5 @@ public interface UserMapper {
     int updatePwdById(@Param("id") int id,@Param("pwd") String pwd);
     int updateFavoritesById(@Param("id") int id,@Param("fav") String favorites);
     int updatePictureById(@Param("id") int id,@Param("pic") String picture);
+
 }

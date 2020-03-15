@@ -22,10 +22,6 @@ export default {
       this.on_off();
       this.$router.push({path:this.$route.path=="/"?"/chart":"/"})
     },
-    heatmap(){
-      this.on_off()
-    },
-
     on_off() {
       let items = document.getElementsByClassName("item");
       if (this.image == zhankai) {

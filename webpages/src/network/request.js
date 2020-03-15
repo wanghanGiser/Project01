@@ -9,7 +9,6 @@ const instance = axios.create({
   baseURL: "/api"
 })
 instance.interceptors.request.use(function (config) {
-  // Do something before request is sent
   if (localStorage.getItem("token"))
     config.headers['Authorization'] = localStorage.getItem("token");
   return config;
@@ -23,8 +22,8 @@ instance.interceptors.response.use(res => {
     }
     store.commit("setLogStatus");
     return res;
-  }
-  localStorage.setItem("token",res.headers.token);
+  }  
+  localStorage.setItem("token", res.headers.token);
   store.commit("setLogStatus");
   return res;
 }, err => {

@@ -38,6 +38,11 @@ export default {
       searchtext:""
     };
   },
+  watch:{
+    "$store.state.cata"(newValue){
+      this.optSelect=newValue
+    }
+  },
   methods: {
     searchFocus() {
       console.log(this.searchtext);

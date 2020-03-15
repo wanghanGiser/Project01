@@ -1,9 +1,9 @@
 <template>
-  <div id="user-image" :style="{backgroundImage:image}" @click.stop="open()">
-    <div id="userOpt" v-show="isShow&&$store.state.isLogin">
+  <div id="user-image" :style="{backgroundImage:image}">
+    <div id="userOpt" v-show="$store.state.isLogin">
       <ul>
-        <li @click.stop="toUserInfo()">修改信息</li>
-        <li @click.stop="exit()">退出登录</li>
+        <li @click="toUserInfo()">修改信息</li>
+        <li @click="exit()">退出登录</li>
       </ul>
     </div>
   </div>
@@ -12,22 +12,15 @@
 <script>
 let hello = require("@/assets/unlogin.png");
 export default {
-  props:{
-    isShow: {
-      type:Boolean,
-      default:false
-    }
-  },
   data() {
     return {
-      image: "url(" + hello + ")",
+      image: "url(" + hello + ")"
     };
   },
   methods: {
-    open() {
-      this.isShow = !this.isShow;
-    },
     exit() {
+      if (this.$route.path !== "/" && this.$route.path !== "/chart")
+        this.$router.push({ path: "/" });
       localStorage.removeItem("token");
       this.$store.commit("setLogStatus");
     },
@@ -37,11 +30,6 @@ export default {
         this.$router.push("/userinfo");
       }
     }
-  },
-  mounted() {
-    document.body.addEventListener("click", () => {
-      if (this.isShow) this.isShow = false;
-    });
   }
 };
 </script>
@@ -73,9 +61,13 @@ img {
 #userOpt > ul {
   list-style: none;
   background-color: rgb(124, 124, 52);
+  display: none;
   width: 6em;
   color: aliceblue;
   cursor: default;
+}
+#user-image:hover > div > ul {
+  display: block;
 }
 #userOpt > ul > li {
 }

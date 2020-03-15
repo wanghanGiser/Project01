@@ -4,7 +4,7 @@
       <tab-button @childEmit="menuList()" v-show="!$store.state.menuShow" />
       <menu-header>
         <div style="display:flex;align-items:center">
-          <user-image :isShow="userShow" @itemClick="itemClick()"/>
+          <user-image @itemClick="itemClick()"/>
           <div v-show="!$store.state.isLogin">
             <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
             <a href="javascript:void(0);" @click="logReg(false)">注册</a>
@@ -24,12 +24,11 @@ import MenuHeader from "@/components/MenuHeader";
 import TabButton from "@/components/common/TabButton";
 import ListBox from "@/components/ListBox";
 import ImageBtn from "@/components/common/ImageBtn.vue";
-
+import {getLocation} from "@/js/map-load.js"
 export default {
   data() {
     return {
       isShow: false,
-      userShow:false,
       windowSize:window.matchMedia('(max-width:768px)').matches
     };
   },
@@ -70,6 +69,9 @@ export default {
         transform:this.windowSize? (this.$store.state.menuShow ? "translateX(0)" : "translateX(-300px)"):"none"
       };
     }
+  },
+  beforeMount() {
+    getLocation()
   },
   mounted() {
     window.onresize=()=>{

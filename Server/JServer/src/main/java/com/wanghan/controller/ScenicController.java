@@ -1,6 +1,7 @@
 package com.wanghan.controller;
 
 import com.wanghan.service.ScenicService;
+import com.wanghan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +14,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/scenic")
 public class ScenicController {
-
+ 
     private ScenicService service;
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Autowired
     public void setService(ScenicService service) {
@@ -32,7 +39,11 @@ public class ScenicController {
     }
 
     @PostMapping("/info")
-    public Map<String, String> getFeatureInfo(@RequestBody Map<String, String> map) {
-        return service.getInfoById(map.get("id"));
+    public Map<String, String> getFeatureInfo(@RequestBody Map<String, String> map,HttpServletRequest request) {
+        Map<String,String> map1=service.getInfoById(map.get("id"));
+        if((Boolean) request.getAttribute("isLogin")){
+            map1.put("ischecked",(userService.selectFavoritesById((Integer) request.getAttribute("u_id"))).indexOf(map.get("id"))!=-1?"1":"0");
+        }
+        return map1;
     }
 }

@@ -26,7 +26,7 @@
         update g_user set u_pwd=#{pwd} where u_id=id;
     </update>
     <update id="updateFavoritesById">
-        update g_uesr set u_favorites=#{fav} where u_id=#{id};
+        update g_user set u_favorites=#{fav} where u_id=#{id};
     </update>
     <update id="updatePictureById">
         update g_user set u_picture=#{pic} where u_id=#{id};

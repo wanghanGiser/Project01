@@ -46,12 +46,9 @@ export default {
       if (this.$route.path != "/") {
         this.$router.push({ path: "/" });
         setTimeout(() => {
-          addFeatureInfo(
-            this.$store.state.cata,
-            this.id,
-            document.getElementById("popup")
-          ).then(res => {
+          addFeatureInfo(this.$store.state.cata, this.id).then(res => {
             if (res) {
+              this.$store.commit("setInfo", res);
               this.$store.state.overLay.setPosition(this.location.split(","));
             }
           });
@@ -59,12 +56,13 @@ export default {
         return;
       }
 
-      addFeatureInfo(
-        this.$store.state.cata,
-        this.id,
-        document.getElementById("popup")
-      ).then(res => {
+      addFeatureInfo(this.$store.state.cata, this.id).then(res => {
         if (res) {
+          this.$store.commit("setInfo", res);
+          document
+            .getElementById("che")
+            .setAttribute("sr_id", this.id);
+
           this.$store.state.overLay.setPosition(this.location.split(","));
         }
       });

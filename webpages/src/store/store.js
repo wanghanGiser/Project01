@@ -5,6 +5,7 @@ import $ajax from "@/network/request.js"
 Vue.use(Vuex)
 const store={
   state:{
+    userID:null,
     isLogin:false,
     cata:"scenic",
     menuShow:false,
@@ -12,7 +13,13 @@ const store={
     overLay:{},
     scenic_list:[],
     activePoint:"",
-    position:""
+    position:"",
+    info: {
+      title: "",
+      ischecked:false,
+      description:"",
+      image:""
+    }
   },
   getters:{
     pageCount(state){
@@ -20,6 +27,15 @@ const store={
     }
   },
   mutations:{
+    setInfo(state,res){
+      state.info.title=res.name_cn;
+      state.info.description=res.description;
+      state.info.image=res.default_photo;
+      state.info.ischecked=res.ischecked!="0"?true:false
+    },
+    setIsCheched(state){
+      state.info.ischecked=true
+    },
     setLocation(state,loca){
       state.position=loca
     },

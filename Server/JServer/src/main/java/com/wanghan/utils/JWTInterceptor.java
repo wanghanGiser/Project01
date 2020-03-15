@@ -28,6 +28,7 @@ public class JWTInterceptor implements HandlerInterceptor {
                 User user=service.selectUserById(uID);
                 if(uname.equals(user.getU_name())){
                     request.setAttribute("isLogin",true);
+                    request.setAttribute("u_id",uID);
                     response.setHeader("Access-Control-Expose-Headers","token");
                     response.setHeader("token",JWTUtils.createJWT(uID,uname));
                     return true;
