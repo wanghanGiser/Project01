@@ -88,7 +88,6 @@ export default {
   float: left;
   color: #747d8c;
   background-color: #f1f2f6;
-  box-shadow: 0 0 3px #000;
   display: table;
 }
 

@@ -37,7 +37,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getSinceList"]),
+    ...mapActions(["getSinceList","getSearchRes"]),
     itemClick(){
       this.$emit("itemClick");
     }
@@ -48,6 +48,10 @@ export default {
   watch: {
     "$store.state.pageNum": function() {
       document.getElementById("listcontent").scrollTop = 0;
+      if(this.$store.state.searchtext!==""){
+        this.getSearchRes();
+        return
+      }
       this.getSinceList();
     },
     "$store.state.cata": function() {

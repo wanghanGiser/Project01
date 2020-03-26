@@ -33,7 +33,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 #user-image {
   width: 3em;
@@ -60,18 +59,23 @@ img {
 }
 #userOpt > ul {
   list-style: none;
-  background-color: rgb(124, 124, 52);
+  background-color: #fff;
   display: none;
   width: 6em;
   color: aliceblue;
   cursor: default;
+  border: 1px solid #ccc;
 }
 #user-image:hover > div > ul {
   display: block;
 }
 #userOpt > ul > li {
+  padding: 2px;
+  text-align: center;
+  color: #778ca3;
 }
 #userOpt > ul > li:hover {
-  background-color: aqua;
+  background-color: #45aaf2;
+  color:#fff
 }
 </style>

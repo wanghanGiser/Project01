@@ -49,6 +49,7 @@ export default {
           addFeatureInfo(this.$store.state.cata, this.id).then(res => {
             if (res) {
               this.$store.commit("setInfo", res);
+              document.getElementById("che").setAttribute("sr_id", this.id);
               this.$store.state.overLay.setPosition(this.location.split(","));
             }
           });
@@ -59,9 +60,7 @@ export default {
       addFeatureInfo(this.$store.state.cata, this.id).then(res => {
         if (res) {
           this.$store.commit("setInfo", res);
-          document
-            .getElementById("che")
-            .setAttribute("sr_id", this.id);
+          document.getElementById("che").setAttribute("sr_id", this.id);
 
           this.$store.state.overLay.setPosition(this.location.split(","));
         }

@@ -17,6 +17,10 @@ public class ScenicServiceImpl implements ScenicService{
         this.mapper = mapper;
     }
 
+    public int getTotal(String keywords) {
+        return mapper.getTotal(keywords);
+    }
+
     public List<Map<String, String>> getScenics(int start) {
         return mapper.getScenics(start);
     }
@@ -25,7 +29,15 @@ public class ScenicServiceImpl implements ScenicService{
         return mapper.getAllScenics();
     }
 
-    public Map<String, String> getInfoById(String id) {
+    public Map<String, Object> getInfoById(String id) {
         return mapper.getInfoById(id);
+    }
+
+    public List<Map<String, String>> search(String keywords, int start) {
+        return mapper.search(keywords,start);
+    }
+
+    public int increase(String id) {
+        return mapper.increase(id);
     }
 }

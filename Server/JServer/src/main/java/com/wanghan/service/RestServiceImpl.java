@@ -17,6 +17,10 @@ public class RestServiceImpl implements RestService{
         this.mapper = mapper;
     }
 
+    public int getTotal(String keywords) {
+        return mapper.getTotal(keywords);
+    }
+
     public List<Map<String, String>> getRests(int start) {
         return mapper.getRests(start);
     }
@@ -25,7 +29,15 @@ public class RestServiceImpl implements RestService{
         return mapper.getAllRest();
     }
 
-    public Map<String, String> getInfoById(String id) {
+    public Map<String, Object> getInfoById(String id) {
         return mapper.getInfoById(id);
+    }
+
+    public List<Map<String, String>> search(String keywords, int start) {
+        return mapper.search(keywords,start);
+    }
+
+    public int increase(String id) {
+        return mapper.increase(id);
     }
 }

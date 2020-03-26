@@ -20,23 +20,23 @@
         href="javascript:void(0);"
         class="pageitem"
         @click="toPage($event)"
-        v-show="$store.state.pageNum<$store.getters.pageCount-3"
+        v-show="$store.state.pageNum<$store.state.pageCount-3"
       >{{$store.state.pageNum+1}}</a>
       <a
         href="javascript:void(0);"
         class="pageitem"
         @click="toPage($event)"
-        v-show="$store.state.pageNum<$store.getters.pageCount-2"
+        v-show="$store.state.pageNum<$store.state.pageCount-2"
       >{{$store.state.pageNum+2}}</a>
-      <span v-show="$store.state.pageNum<$store.getters.pageCount-1">..</span>
+      <span v-show="$store.state.pageNum<$store.state.pageCount-1">..</span>
       <a
         href="javascript:void(0);"
         class="pageitem"
         @click="toPage($event)"
-        v-show="$store.state.pageNum<$store.getters.pageCount"
-      >{{$store.getters.pageCount}}</a>
+        v-show="$store.state.pageNum<$store.state.pageCount"
+      >{{$store.state.pageCount}}</a>
     </div>
-    <button :disabled="$store.state.pageNum==$store.getters.pageCount" @click="toDown()">下一页</button>
+    <button :disabled="$store.state.pageNum==$store.state.pageCount" @click="toDown()">下一页</button>
   </div>
 </template>
 
@@ -45,11 +45,9 @@ export default {
  
   methods: {
     toPage($event) {
-      
       this.$store.commit("changeNum", $event.target.text);
     },
     toUp() {
-      
       this.$store.commit("setPageNum", -1);
     },
     toDown() {
@@ -63,7 +61,6 @@ export default {
 #list-footer {
   position: relative;
   bottom: 0;
-  box-shadow: 0 -2px 3px #ccc;
   height: 2em;
   width: 300px;
   display: flex;

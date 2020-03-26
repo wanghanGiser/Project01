@@ -22,7 +22,6 @@ export default {};
   height: 26px;
   background: silver;
   border-radius: 15px;
-  box-shadow: 1px 1px 2px rgb(51, 49, 49);
   cursor: pointer;
 }
 

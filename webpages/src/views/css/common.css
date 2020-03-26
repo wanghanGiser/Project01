@@ -1,15 +1,49 @@
-*{
+* {
   padding: 0;
   margin: 0;
   border: 0;
   box-sizing: border-box;
 }
-html,body{
+
+html,
+body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-size: 18px;
   color: #778ca3;
 }
-a{
+
+a {
   text-decoration: none;
   cursor: pointer;
+}
+
+input {
+  background-color: #fff;
+}
+
+select {
+  background-color: #fff;
+}
+
+option {
+  background-color: #fff;
+}
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 1px;
+}
+
+*::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #a5b1c2;
+}
+
+*::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(200, 200, 200, 0.2);
+  border-radius: 10px;
+  background: #ededed;
 }

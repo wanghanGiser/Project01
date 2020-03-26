@@ -5,7 +5,7 @@ import $ajax from "@/network/request.js"
 Vue.use(Vuex)
 const store={
   state:{
-    userID:null,
+    searchtext:"",
     isLogin:false,
     cata:"scenic",
     menuShow:false,
@@ -18,23 +18,30 @@ const store={
       title: "",
       ischecked:false,
       description:"",
-      image:""
-    }
-  },
-  getters:{
-    pageCount(state){
-      return state.cata=="scenic"?19:14
-    }
+      image:"",
+      f_count:0
+    },
+    pageCount:19
   },
   mutations:{
+    changeSearch(state,newtxt){
+      state.searchtext=newtxt
+    },
+    setPageCount(state,total){
+      state.pageCount=parseInt(total/10)+(total%10===0?0:1);
+    },
     setInfo(state,res){
       state.info.title=res.name_cn;
       state.info.description=res.description;
       state.info.image=res.default_photo;
-      state.info.ischecked=res.ischecked!="0"?true:false
+      state.info.ischecked=(res.ischecked&&res.ischecked!="0")?true:false;
+      state.info.f_count=res.f_count;
     },
     setIsCheched(state){
       state.info.ischecked=true
+    },
+    setFCount(state){
+      state.info.f_count+=1;
     },
     setLocation(state,loca){
       state.position=loca
@@ -72,9 +79,26 @@ const store={
           num: context.state.pageNum
         })
         .then(res => {
-          context.commit("changeList",res.data);
+          if(res.data){
+            res.data.total!==context.state.pageCount&&context.commit("setPageCount",res.data.total)
+            context.commit("changeList",res.data.results);
+          }
         }).catch(()=>{
         });
+    },
+    getSearchRes(context){
+      if(context.state.searchtext!==""){
+        $ajax.post(context.state.cata=="scenic"?"/scenic/search":"/rest/search",
+        {
+          num:context.state.pageNum,
+          txt:context.state.searchtext
+        }).then(res=>{
+          if(res.data){
+            res.data.total!==context.state.pageCount&&context.commit("setPageCount",res.data.total)
+            context.commit("changeList",res.data.results);
+          }
+        })
+      }
     }
   }
 }

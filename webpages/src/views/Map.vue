@@ -2,11 +2,18 @@
   <div id="map">
     <div id="popup">
       <div id="popup-content">
+        <div
+          id="alert1"
+          style="width:5em;position:absolute;top:70%;display:none;text-align:center;background-color:rgba(0,0,0,0.5);color:#fff;padding:7px;font-size:1.3em;left:50%;margin-left:-2.5em"
+        >收藏成功</div>
         <h2>{{$store.state.info.title}}</h2>
         <div>
           <div>
             <button id="gohere">去这里</button>
             <label :style="{backgroundImage:image}">
+              <div>
+                <div>{{f_count}}</div>
+              </div>
               <input
                 type="checkbox"
                 id="che"
@@ -39,10 +46,17 @@ export default {
     return {
       scenicLayer: null,
       restLayer: null,
-      image1:"url("+require("@/assets/comment.png")+")"
+      image1: "url(" + require("@/assets/comment.png") + ")"
     };
   },
   computed: {
+    f_count() {
+      return this.$store.state.info.f_count > 1000
+        ? this.$store.state.info.f_count > 10000
+          ? parseInt(this.$store.state.info.f_count / 10000) + "w+"
+          : parseInt(this.$store.state.info.f_count / 1000) + "k+"
+        : this.$store.state.info.f_count;
+    },
     image() {
       return this.$store.state.info.ischecked
         ? "url(" + require("@/assets/stored.png") + ")"
@@ -66,7 +80,15 @@ export default {
           cata: this.$store.state.cata
         })
         .then(res => {
-          res.data && this.$store.commit("setIsCheched");
+          if (res.data) {
+            let alert1 = document.getElementById("alert1");
+            alert1.style.display = "block";
+            this.$store.commit("setIsCheched");
+            this.$store.commit("setFCount");
+            setTimeout(() => {
+              alert1.style.display = "none";
+            }, 1000);
+          }
         });
     }
   },
@@ -256,6 +278,7 @@ export default {
   flex-direction: column;
   align-items: left;
   overflow: auto;
+  border-radius: 10px;
 }
 #popup-content > img {
   width: 100%;
@@ -263,7 +286,7 @@ export default {
 }
 #popup-content > div > div {
   display: flex;
-  justify-content:flex-start;
+  justify-content: flex-start;
   align-items: center;
 }
 #popup-content > div > div input {
@@ -278,9 +301,28 @@ export default {
   width: 1.5em;
   height: 1.5em;
 }
+label > div {
+  position: relative;
+  height: 0;
+}
+label > div > div {
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  text-align: center;
+  line-height: 1em;
+  color: #eb3b5a;
+  font-size: 12px;
+  top: -0.5em;
+  font-weight: 600;
+  border-radius: 50%;
+  right: -0.4em;
+}
 #popup-content > div > div > button {
+  margin: 0 1em;
   border: none;
   outline: none;
+  border-radius: 2px;
   display: inline-block;
   background-color: #45aaf2;
   height: 2em;
@@ -289,9 +331,9 @@ export default {
   text-align: center;
   color: #fff;
 }
-#popup-content > div > div > button:last-child{
+#popup-content > div > div > button:last-child {
   width: 2em;
-  margin:0 1em;
+  margin: 0 1em;
   background-color: #fff;
   background-position: center;
   background-repeat: no-repeat;

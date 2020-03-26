@@ -66,7 +66,6 @@ export default {
 <style scoped>
 #mainLog {
   background-image: linear-gradient(45deg, #eae5c9, #6cc6cb);
-  box-shadow: 0 0 10px black;
   position: relative;
 }
 

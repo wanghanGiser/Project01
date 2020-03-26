@@ -22,7 +22,7 @@ export default {
     return {
       isShow: false,
       isReg: false,
-      username: ""
+      username: "",
     };
   },
   components: {
@@ -62,6 +62,7 @@ export default {
             this.$store.commit("setLogStatus");
             this.username = args[1].username;
             this.isShow = !this.isShow;
+            this.$router.go(0)
           }
         });
     },
@@ -76,7 +77,7 @@ export default {
       }
     });
     this.$ajax.get("/user/info").then(res => {
-      if(this.$store.state.isLogin) this.username=res.data.name;
+      if (this.$store.state.isLogin) this.username = res.data.name;
     });
   }
 };

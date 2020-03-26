@@ -1,7 +1,7 @@
 <template>
   <div id="toolbar">
     <div id="searchbox">
-      <input id="search" type="search" :style="bkgImg" v-model.trim="searchtext" @keyup.13="searchFocus()" />
+      <input id="search" type="search" :style="bkgImg" v-model.trim.lazy="$store.state.searchtext" @keyup.13="searchFocus()" />
     </div>
     <div id="selectbox">
       <select v-model="optSelect" @change="changeSelect()">
@@ -35,18 +35,22 @@ export default {
         scenic: ["5A级", "4A级", "3A级", "2A级"],
         rest: ["5星级", "4星级", "3星级", "2星级"]
       },
-      searchtext:""
     };
   },
   watch:{
-    "$store.state.cata"(newValue){
-      this.optSelect=newValue
+    "$store.state.cata"(){
+      this.$store.commit("changeSearch","")
     }
   },
   methods: {
     searchFocus() {
-      console.log(this.searchtext);
       document.getElementById("search").blur();
+      this.$store.commit("changeNum",1)
+      if(this.$store.state.searchtext!==""){
+        this.$store.dispatch("getSearchRes")
+        return
+      }
+      this.$store.dispatch("getSinceList")
     },
     changeSelect(){
       this.$store.commit("setCata",this.optSelect)

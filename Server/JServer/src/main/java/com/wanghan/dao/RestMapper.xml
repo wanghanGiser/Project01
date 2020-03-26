@@ -3,6 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wanghan.dao.RestMapper">
+    <select id="getTotal" parameterType="String" resultType="int">
+        select COUNT(*) from g_rest
+        <where>
+            <if test="keywords!=null">
+                name_cn like "%"#{keywords}"%"
+            </if>
+        </where>
+    </select>
     <select id="getRests" parameterType="int" resultType="java.util.Map">
         select restaurant_id,name_cn,description,default_photo,location from g_rest order by rest_level limit ${start},10;
     </select>
@@ -10,6 +18,12 @@
         select restaurant_id,name_cn,location,rest_level from g_rest
     </select>
     <select id="getInfoById" parameterType="String" resultType="java.util.Map">
-        select name_cn,restaurant_id,description,default_photo from g_rest where restaurant_id=#{id};
+        select name_cn,restaurant_id,description,default_photo,f_count from g_rest where restaurant_id=#{id};
     </select>
+    <select id="search" resultType="java.util.Map">
+        select restaurant_id,name_cn,description,default_photo,location,f_count from g_rest where name_cn like "%"#{keywords}"%" order by rest_level limit ${start},10
+    </select>
+    <update id="increase" parameterType="String">
+        update g_rest set f_count=f_count+1 where restaurant_id=#{id}
+    </update>
 </mapper>

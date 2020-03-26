@@ -2,6 +2,8 @@ package com.wanghan.controller;
 
 import com.wanghan.controller.dto.LoginRegStatus;
 import com.wanghan.pojo.User;
+import com.wanghan.service.RestService;
+import com.wanghan.service.ScenicService;
 import com.wanghan.service.UserService;
 import com.wanghan.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,14 @@ import java.util.Map;
 public class UserInfoController {
     private UserService service;
     private LoginRegStatus status;
+    private ScenicService scenicService;
+    private RestService restService;
 
     @Autowired
-    public UserInfoController(UserService service) {
+    public UserInfoController(UserService service,ScenicService scenicService,RestService restService) {
         this.service = service;
+        this.scenicService=scenicService;
+        this.restService=restService;
     }
 
     //    requestParam接受的前端格式不能为json
@@ -83,28 +89,34 @@ public class UserInfoController {
 
     @PostMapping("/updatefav")
     public Boolean updateFavo(@RequestBody Map<String, Object> map,HttpServletRequest request) {
+        System.out.println(request.getAttribute("isLogin"));
         if(!(Boolean) request.getAttribute("isLogin")){
             return false;
         }
+        System.out.println(request.getAttribute("u_id"));
         int id=(Integer) request.getAttribute("u_id");
         String str = service.selectFavoritesById(id);
+        System.out.println(map.get("favo"));
+        System.out.println(map.get("mothod"));
+        System.out.println(map.get("cata"));
         String favo = map.get("favo").toString();
         if (map.get("mothod").equals("put")) {
             try {
                 if (map.get("cata").equals("scenic")) {
                     str = favo + "," + str;
                     service.updateFavoritesById(id, str);
+                    scenicService.increase(favo);
                     return true;
                 }
                 str += (favo + ",");
                 service.updateFavoritesById(id, str);
+                restService.increase(favo);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
         }
-
         service.updateFavoritesById(id, str.replace(favo + ",", ""));
         return true;
     }
