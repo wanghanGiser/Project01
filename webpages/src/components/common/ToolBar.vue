@@ -1,24 +1,22 @@
 <template>
   <div id="toolbar">
     <div id="searchbox">
-      <input id="search" type="search" :style="bkgImg" v-model.trim.lazy="$store.state.searchtext" @keyup.13="searchFocus()" />
+      <input
+        id="search"
+        type="search"
+        :style="bkgImg"
+        v-model.trim.lazy="$store.state.searchtext"
+        @keyup.13="searchFocus()"
+      />
     </div>
     <div id="selectbox">
-      <select v-model="optSelect" @change="changeSelect()">
+      <select v-model="$store.state.cata">
         <option value="scenic">景区</option>
         <option value="rest">酒店</option>
       </select>
     </div>
     <div id="checkbox">
-      <a href="javascript:void(0);">筛选</a>
-      <ul>
-        <li v-for="(item,index) in levels[this.$store.state.cata]" :key="index">
-          <label>
-            <input type="checkbox" />
-            {{item}}
-          </label>
-        </li>
-      </ul>
+      <button>附近</button>
     </div>
   </div>
 </template>
@@ -29,31 +27,23 @@ export default {
     return {
       bkgImg: {
         backgroundImage: "url(" + require("@/assets/search.png") + ")"
-      },
-      optSelect: "scenic",
-      levels: {
-        scenic: ["5A级", "4A级", "3A级", "2A级"],
-        rest: ["5星级", "4星级", "3星级", "2星级"]
-      },
+      }
     };
   },
-  watch:{
-    "$store.state.cata"(){
-      this.$store.commit("changeSearch","")
+  watch: {
+    "$store.state.cata"() {
+      this.$store.commit("changeSearch", "");
     }
   },
   methods: {
     searchFocus() {
       document.getElementById("search").blur();
-      this.$store.commit("changeNum",1)
-      if(this.$store.state.searchtext!==""){
-        this.$store.dispatch("getSearchRes")
-        return
+      this.$store.commit("changeNum", 1);
+      if (this.$store.state.searchtext !== "") {
+        this.$store.dispatch("getSearchRes");
+        return;
       }
-      this.$store.dispatch("getSinceList")
-    },
-    changeSelect(){
-      this.$store.commit("setCata",this.optSelect)
+      this.$store.dispatch("getSinceList");
     }
   }
 };
@@ -96,39 +86,16 @@ select {
 
 #checkbox {
   position: relative;
-  height: 1.5em;
-  line-height: 1.5em;
-  font-size: 0.8em;
 }
-#checkbox > ul {
-  color: #353b48;
-  position: absolute;
-  right: 0;
-  font-size: 1em;
-  background-color: #fff;
-  box-shadow: 0 0 1px #000;
-  z-index: 20;
-  list-style: none;
-  height: 0;
-  overflow: hidden;
-}
-#checkbox > ul > li {
-  width: 5em;
-  height: 2em;
-  text-align: center;
-  line-height: 2em;
-}
-#checkbox > ul > li:hover {
+#checkbox > button {
+  height: 1.8em;
+  width: 3em;
   background-color: #0984e3;
   color: #fff;
+  outline: none;
 }
-#checkbox:hover > ul {
-  height: auto;
-}
-#checkbox > ul > li > label {
-  display: block;
-  width: 100%;
-  height: 2em;
-  line-height: 2em;
+#checkbox > button:hover{
+  border: 1px solid #000;
+  cursor: pointer;
 }
 </style>>

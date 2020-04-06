@@ -50,6 +50,10 @@ public class UserServiceImpl implements UserService{
         return mapper.updatePwdById(id,pwd);
     }
 
+    public int updateNameById(int id, String name) {
+        return mapper.updateNameById(id,name);
+    }
+
 
     public int updateFavoritesById(int id, String favorites) {
         return mapper.updateFavoritesById(id,favorites);

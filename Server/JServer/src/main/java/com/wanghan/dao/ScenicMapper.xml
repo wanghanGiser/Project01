@@ -26,4 +26,13 @@
     <update id="increase" parameterType="String">
         update g_scenic set f_count=f_count+1 where scenic_id=#{id}
     </update>
+    <select id="selectByIds" resultType="java.util.Map">
+        select scenic_id,name_cn,location from g_scenic where scenic_id in 
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getDataSource" resultType="java.util.Map">
+        select scenic_id,name_cn,location,f_count from g_scenic order by f_count desc limit 0,10
+    </select>
 </mapper>

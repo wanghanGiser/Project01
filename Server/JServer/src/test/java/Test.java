@@ -14,30 +14,27 @@ import java.util.Map;
 public class Test {
     @org.junit.Test
     public void test(){
-        ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
-        UserService mapper=context.getBean("userServiceImpl", UserService.class);
-        System.out.println(mapper.selectFavoritesById(5).split(";")[1]);
-        String str=";";
-        String bu="WWW";
-        System.out.println(bu+str);
-        System.out.println(str+bu);
+        String str=";9f0aa1287496853b5b8a8f3d2ae7e044,";
+        String[] arr=str.split(";");
     }
     @org.junit.Test
     public void testScenic(){
+        String str="4ae298f94a61f168014a6266f4be0045,7f33afeaaf82ca46049c2d374c61a836,c357c1043fc6c345013fd1b508971c8b,170,;9f0aa1287496853b5b8a8f3d2ae7e044,cbafefdaf2a70caceb0a714a004ba190,6f01d08d433213fce1dfe52b80f7d76b,";
+        String[] arr=str.split(";");
         ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
         ScenicMapper mapper=context.getBean("scenicMapper",ScenicMapper.class);
-        List<Map<String,String>> lists=mapper.search("临沂",0);
+        List<Map<String,Object>> lists=mapper.getDataSource();
         for (Map s:lists){
-            System.out.println(s.get("name_cn"));
+            System.out.println(s);
         }
     }
     @org.junit.Test
     public void testRest(){
         ApplicationContext context=new ClassPathXmlApplicationContext("applicationContext.xml");
         RestMapper mapper=context.getBean("restMapper", RestMapper.class);
-        List<Map<String,String>> lists=mapper.search("临沂",0);
+        List<Map<String,Object>> lists=mapper.getDataSource();
         for (Map s:lists){
-            System.out.println(s.get("name_cn"));
+            System.out.println(s);
         }
     }
     @org.junit.Test

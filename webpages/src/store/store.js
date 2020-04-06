@@ -5,6 +5,7 @@ import $ajax from "@/network/request.js"
 Vue.use(Vuex)
 const store={
   state:{
+    count:0,
     searchtext:"",
     isLogin:false,
     cata:"scenic",
@@ -13,19 +14,23 @@ const store={
     overLay:{},
     scenic_list:[],
     activePoint:"",
-    position:"",
+    position:null,
     info: {
       title: "",
       ischecked:false,
       description:"",
       image:"",
-      f_count:0
+      f_count:0,
+      distance:0
     },
     pageCount:19
   },
   mutations:{
     changeSearch(state,newtxt){
       state.searchtext=newtxt
+    },
+    setRun(state,count){
+      state.count=count
     },
     setPageCount(state,total){
       state.pageCount=parseInt(total/10)+(total%10===0?0:1);
@@ -36,6 +41,7 @@ const store={
       state.info.image=res.default_photo;
       state.info.ischecked=(res.ischecked&&res.ischecked!="0")?true:false;
       state.info.f_count=res.f_count;
+      state.info.distance=res.distance
     },
     setIsCheched(state){
       state.info.ischecked=true
@@ -94,7 +100,7 @@ const store={
           txt:context.state.searchtext
         }).then(res=>{
           if(res.data){
-            res.data.total!==context.state.pageCount&&context.commit("setPageCount",res.data.total)
+            res.data.total!==context.state.pageCount&&context.commit("setPageCount",res.data.total===0?1:res.data.total)
             context.commit("changeList",res.data.results);
           }
         })

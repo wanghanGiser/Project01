@@ -1,19 +1,31 @@
 <template>
-  <div id="map">
+  <div id="map" class="view">
+    <div style="height:0;position:relative">
+      <ul id="legend">
+        <li>5</li>
+        <li>4</li>
+        <li>3</li>
+        <li>2</li>
+        <li>0</li>
+      </ul>
+    </div>
     <div id="popup">
       <div id="popup-content">
         <div
           id="alert1"
           style="width:5em;position:absolute;top:70%;display:none;text-align:center;background-color:rgba(0,0,0,0.5);color:#fff;padding:7px;font-size:1.3em;left:50%;margin-left:-2.5em"
         >收藏成功</div>
-        <h2>{{$store.state.info.title}}</h2>
         <div>
+          <h2>
+            {{$store.state.info.title}}
+            <h6 v-show="$store.state.position">距您:{{$store.state.info.distance}}km</h6>
+          </h2>
+        </div>
+        <div style="width:100%">
           <div>
-            <button id="gohere">去这里</button>
+            <button id="gohere" :style="{backgroundImage:routeImg}"></button>
             <label :style="{backgroundImage:image}">
-              <div>
-                <div>{{f_count}}</div>
-              </div>
+              <div class="count">{{f_count}}</div>
               <input
                 type="checkbox"
                 id="che"
@@ -21,7 +33,9 @@
                 @click="store($event)"
               />
             </label>
-            <button :style="{backgroundImage:image1}"></button>
+            <button :style="{backgroundImage:image1}">
+              <div class="count">0</div>
+            </button>
           </div>
         </div>
         <p>{{$store.state.info.description}}</p>
@@ -37,16 +51,22 @@ import {
   getPoints,
   setOverLay,
   addFeatureInfo,
+  getLocation,
   setHeatMap,
-  getRoute
+  getRoute,
+  getNear
 } from "@/js/map-load.js";
 import Heatmap from "ol/layer/Heatmap";
+let store = require("@/assets/stored.png");
+let unstore = require("@/assets/unstore.png");
 export default {
   data() {
     return {
       scenicLayer: null,
       restLayer: null,
-      image1: "url(" + require("@/assets/comment.png") + ")"
+      image1: "url(" + require("@/assets/comment.png") + ")",
+      routeImg: "url(" + require("@/assets/route.png") + ")",
+      distance: 0
     };
   },
   computed: {
@@ -59,8 +79,8 @@ export default {
     },
     image() {
       return this.$store.state.info.ischecked
-        ? "url(" + require("@/assets/stored.png") + ")"
-        : "url(" + require("@/assets/unstore.png") + ")";
+        ? "url(" + store + ")"
+        : "url(" + unstore + ")";
     }
   },
   methods: {
@@ -92,6 +112,9 @@ export default {
         });
     }
   },
+  activated() {
+    if (!this.map.getSize()) this.map.updateSize();
+  },
   watch: {
     "$store.state.cata": function(newValue) {
       this.map.getLayers().forEach(item => {
@@ -106,28 +129,25 @@ export default {
         });
         return;
       }
-      this.scenicLayer.setVisible(newValue === "scenic");
-      this.restLayer.setVisible(newValue === "rest");
+      this.scenicLayer.setVisible(newValue == "scenic");
+      this.restLayer.setVisible(newValue == "rest");
     }
-  },
-  beforeCreate() {
-    this.$store.commit("setCata", "scenic");
   },
   async mounted() {
     this.map = mapInit();
+    getLocation(this.map);
     this.scenicLayer = await getPoints(this.$store.state.cata);
     this.map.addLayer(this.scenicLayer);
     let popupOverLay = setOverLay("popup");
     let route;
     popupOverLay.on("change:position", () => {
-      document.getElementById("popup-content").scrollTop = 0;
       if (popupOverLay.getPosition()) {
         route && this.map.removeLayer(route);
         document.getElementById("gohere").onclick = async () => {
           route = await getRoute();
           if (route) {
             this.map.getView().animate({
-              center: this.$store.state.position.split(","),
+              center: this.$store.state.position,
               zoom: 12
             });
             this.map.addLayer(route);
@@ -140,6 +160,7 @@ export default {
       route && this.map.removeLayer(route);
     });
     document.getElementById("locate").addEventListener("click", () => {
+      if (this.$route.path != "/") return;
       route && this.map.removeLayer(route);
     });
     this.$store.commit("setOverLay", popupOverLay);
@@ -177,6 +198,7 @@ export default {
                 .getElementById("che")
                 .setAttribute("sr_id", feature.get("sr_id"));
               popupOverLay.setPosition(coordinates);
+              document.getElementById("popup-content").scrollTop = 0;
             }
           }
         );
@@ -184,56 +206,61 @@ export default {
         popupOverLay.setPosition(undefined);
       }
     });
-    let s_heat, r_heat;
-    document.getElementById("heat-map").onclick = function() {
-      let isscenic = self.$store.state.cata === "scenic";
-      let layersource = isscenic ? self.scenicLayer : self.restLayer;
-      layersource.setVisible(!layersource.getVisible());
-      if (isscenic) {
-        if (s_heat) {
-          s_heat.setVisible(!s_heat.getVisible());
-          return;
-        }
-        s_heat = setHeatMap(layersource);
-        self.map.addLayer(s_heat);
+
+    document.getElementById("heat-map").onclick = () => {
+      if (this.$route.path != "/") return;
+      setHeatMap(
+        this[this.$store.state.cata + "Layer"],
+        this.$store.state.cata == "scenic"
+      );
+    };
+    document.getElementById("checkbox").onclick = () => {
+      if (this.$route.path != "/") return;
+      if (!this.$store.state.position) {
+        alert("未获取到定位");
         return;
       }
-      if (r_heat) {
-        r_heat.setVisible(!r_heat.getVisible());
-        return;
-      }
-      r_heat = setHeatMap(layersource);
-      self.map.addLayer(r_heat);
+      getNear(
+        this.$store.state.position,
+        this[this.$store.state.cata + "Layer"]
+      );
+      this.$store.commit("setMenuShow");
+      this.map.getView().animate({
+        center: this.$store.state.position,
+        zoom: 10
+      });
     };
   }
 };
 </script>
 
 <style>
-#map {
-  float: left;
-  height: 100vh;
-  overflow: hidden;
+#legend {
+  position: absolute;
+  right: 0;
+  list-style: none;
+  text-align: center;
+  width: 2em;
+  color: #fff;
+  z-index: 1;
+  background-color: #fff;
+  transform: translateY(-100%);
+  transition: transform 0.2s ease-out;
 }
-@media screen and (max-width: 768px) {
-  #map {
-    width: 100vw;
-  }
+#legend > li:nth-child(1) {
+  background-color: rgb(234, 32, 39);
 }
-@media screen and (min-width: 769px) {
-  #map {
-    width: calc(100vw - 300px);
-  }
+#legend > li:nth-child(2) {
+  background-color: rgb(255, 195, 18);
 }
-@media screen and (min-width: 993px) {
-  #map {
-    width: calc(100vw - 300px);
-  }
+#legend > li:nth-child(3) {
+  background-color: rgb(196, 229, 56);
 }
-@media screen and (min-width: 1201px) {
-  #map {
-    width: calc(100vw - 300px);
-  }
+#legend > li:nth-child(4) {
+  background-color: rgb(18, 203, 196);
+}
+#legend > li:nth-child(5) {
+  background-color: rgb(0, 148, 50);
 }
 #popup {
   position: absolute;
@@ -284,14 +311,25 @@ export default {
   width: 100%;
   max-width: 88vw;
 }
+#popup-content > div > h2 {
+  display: flex;
+  align-items: baseline;
+}
+h2 > h6 {
+  color: #778ca3;
+  margin-left: auto;
+}
 #popup-content > div > div {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  height: 3.5em;
+  border-bottom: 1px solid #ccc;
 }
 #popup-content > div > div input {
   display: none;
 }
+
 #popup-content > div > div label {
   margin-left: auto;
   display: inline-block;
@@ -301,42 +339,44 @@ export default {
   width: 1.5em;
   height: 1.5em;
 }
-label > div {
+label {
   position: relative;
   height: 0;
 }
-label > div > div {
+.count {
   position: absolute;
-  width: 1em;
+  width: 100%;
   height: 1em;
   text-align: center;
   line-height: 1em;
-  color: #eb3b5a;
+  color: #8a8a8a;
   font-size: 12px;
-  top: -0.5em;
-  font-weight: 600;
-  border-radius: 50%;
-  right: -0.4em;
+  top: 100%;
+  left: 0;
+  font-weight: 800;
 }
 #popup-content > div > div > button {
-  margin: 0 1em;
   border: none;
   outline: none;
   border-radius: 2px;
   display: inline-block;
-  background-color: #45aaf2;
+  background-color: #fff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   height: 2em;
   line-height: 2em;
   padding: 0 5px;
   text-align: center;
   color: #fff;
-}
-#popup-content > div > div > button:last-child {
   width: 2em;
+  position: relative;
   margin: 0 1em;
-  background-color: #fff;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+}
+#popup-content > div > div > button:first-child {
+  width: 2.2em;
+  height: 2.2em;
+  line-height: 2.2em;
+  /* transform: translateY(5px); */
 }
 </style>

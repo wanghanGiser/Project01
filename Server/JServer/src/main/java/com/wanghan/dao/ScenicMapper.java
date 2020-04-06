@@ -13,4 +13,6 @@ public interface ScenicMapper {
     Map<String,Object> getInfoById(String id);
     List<Map<String,String>> search(@Param("keywords") String keywords,@Param("start") int start);
     int increase(String id);
+    List<Map<String,String>> selectByIds(String[] list);
+    List<Map<String,Object>> getDataSource();
 }

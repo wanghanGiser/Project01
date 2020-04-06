@@ -3,7 +3,6 @@
     <div id="imageBox">
       <img :src="src" />
     </div>
-
     <div id="descrip">
       <h4>{{title}}</h4>
       <p>{{content}}</p>
@@ -45,24 +44,13 @@ export default {
       this.$store.commit("setPosition", this.location);
       if (this.$route.path != "/") {
         this.$router.push({ path: "/" });
-        setTimeout(() => {
-          addFeatureInfo(this.$store.state.cata, this.id).then(res => {
-            if (res) {
-              this.$store.commit("setInfo", res);
-              document.getElementById("che").setAttribute("sr_id", this.id);
-              this.$store.state.overLay.setPosition(this.location.split(","));
-            }
-          });
-        }, 500);
-        return;
       }
-
       addFeatureInfo(this.$store.state.cata, this.id).then(res => {
         if (res) {
           this.$store.commit("setInfo", res);
           document.getElementById("che").setAttribute("sr_id", this.id);
-
           this.$store.state.overLay.setPosition(this.location.split(","));
+          document.getElementById("popup-content").scrollTop = 0;
         }
       });
     }

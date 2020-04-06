@@ -9,8 +9,9 @@ Vue.config.productionTip = false
 Vue.prototype.$ajax=instance
 Vue.use(VueTouch, {name: 'v-touch'})
 
-new Vue({
+let vm=new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount('#app')
+export default vm;

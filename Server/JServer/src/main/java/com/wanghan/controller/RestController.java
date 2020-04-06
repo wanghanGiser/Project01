@@ -57,10 +57,14 @@ public class RestController {
     @PostMapping("/search")
     public Map<String,Object> search(@RequestBody Map<String,Object> map){
         int total=service.getTotal(map.get("txt").toString());
-        List<Map<String,String>> list=service.search(map.get("txt").toString(),((Integer) map.get("num")-1)*10+1);
+        List<Map<String,String>> list=service.search(map.get("txt").toString(),((Integer) map.get("num")-1)*10);
         Map<String,Object> map1=new HashMap<String, Object>();
         map1.put("total",total);
         map1.put("results",list);
         return map1;
+    }
+    @GetMapping("/getData")
+    public List<Map<String,Object>> getData(){
+        return service.getDataSource();
     }
 }

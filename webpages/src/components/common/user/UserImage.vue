@@ -1,5 +1,5 @@
 <template>
-  <div id="user-image" :style="{backgroundImage:image}">
+  <div id="user-image" :style="{backgroundImage:'url(' +image+')'}">
     <div id="userOpt" v-show="$store.state.isLogin">
       <ul>
         <li @click="toUserInfo()">修改信息</li>
@@ -10,12 +10,11 @@
 </template>
 
 <script>
-let hello = require("@/assets/unlogin.png");
 export default {
-  data() {
-    return {
-      image: "url(" + hello + ")"
-    };
+  props:{
+    image:{
+      type:String
+    }
   },
   methods: {
     exit() {

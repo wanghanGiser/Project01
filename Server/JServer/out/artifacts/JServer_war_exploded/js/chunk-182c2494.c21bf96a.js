@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-182c2494"],{5178:function(n,t,c){"use strict";c.r(t);var e=function(){var n=this,t=n.$createElement,c=n._self._c||t;return c("div",{attrs:{id:"chart"}},[n._v(" 这是chart路由组件 ")])},r=[],u={},a=u,i=(c("d674"),c("2877")),s=Object(i["a"])(a,e,r,!1,null,null,null);t["default"]=s.exports},7152:function(n,t,c){},d674:function(n,t,c){"use strict";var e=c("7152"),r=c.n(e);r.a}}]);
-//# sourceMappingURL=chunk-182c2494.c21bf96a.js.map

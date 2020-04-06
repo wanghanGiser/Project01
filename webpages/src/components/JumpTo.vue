@@ -1,19 +1,26 @@
 <template>
   <div id="jump-to">
     <div class="item" @click="on_off()" :style="{backgroundImage:image}"></div>
-    <div class="item" @click="jump()" style="display: none;height: 0em;transition:height .1s ease-in-out" />
-    <div class="item" id="heat-map" style="display: none;height: 0em;transition:height .1s ease-in-out" />
-    <div class="item" id="locate" style="display: none;height: 0em;transition:height .1s ease-in-out" />
+    <div class="item" @click="jump()" :style="{display: 'none',height: 0,backgroundImage:jumpto}" />
+    <div class="item" id="heat-map" :style="{display: 'none',height: 0,backgroundImage:heatmap}" />
+    <div class="item" id="locate" :style="{display: 'none',height: 0,backgroundImage:locate}" />
   </div>
 </template>
 
 <script>
-let zhankai = "url(" + require("@/assets/zhankai.png") + ")";
-let zhedie = "url(" + require("@/assets/zhedie.png") + ")";
+const zhankai = "url(" + require("@/assets/zhankai.png") + ")";
+const zhedie = "url(" + require("@/assets/zhedie.png") + ")";
+const jumpto="url("+require("@/assets/chart.png")+")";
+const heatmap="url("+require("@/assets/heatmap.png")+")";
+const locate="url("+require("@/assets/locate.png")+")";
+
 export default {
   data() {
     return {
-      image: zhankai
+      image: zhankai,
+      jumpto,
+      heatmap,
+      locate
     };
   },
   mounted() {},
@@ -85,6 +92,7 @@ export default {
   background-position: center;
   background-size: 60%;
   background-repeat: no-repeat;
+  transition:height .1s ease-in-out
 }
 .item:hover {
   background-color: rgba(0, 60, 136, 0.7);

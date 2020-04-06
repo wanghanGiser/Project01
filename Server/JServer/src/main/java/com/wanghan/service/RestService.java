@@ -13,4 +13,6 @@ public interface RestService {
     Map<String,Object> getInfoById(String id);
     List<Map<String,String>> search( String keywords,  int start);
     int increase(String id);
+    List<Map<String,String>> selectByIds(String[] list);
+    List<Map<String,Object>> getDataSource();
 }

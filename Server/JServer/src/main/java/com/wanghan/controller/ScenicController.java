@@ -62,4 +62,8 @@ public class ScenicController {
         map1.put("results",list);
         return map1;
     }
+    @GetMapping("/getData")
+    public List<Map<String,Object>> getData(){
+        return service.getDataSource();
+    }
 }

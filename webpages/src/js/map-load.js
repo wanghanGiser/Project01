@@ -7,7 +7,7 @@ import {
 } from 'ol/proj';
 import {
   Vector as VectorLayer,
-  Heatmap
+  // Heatmap
 } from 'ol/layer';
 import {
   Cluster,
@@ -18,7 +18,7 @@ import GeoJSON from "ol/format/GeoJSON"
 import {
   Style,
   Text,
-
+  Icon
 } from 'ol/style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
@@ -39,11 +39,120 @@ import {
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LineString from 'ol/geom/LineString';
 import MultiLineString from 'ol/geom/MultiLineString';
+import {
+  getDistance
+} from 'ol/sphere';
 
 const CENTER = [118.3506988, 35.1032403];
 const projection = getProjection('EPSG:4326');
+const nearStyle = function (feature, center) {
+  let features = feature.get("features").sort(function (a, b) {
+    if (a.get("level") > b.get("level")) {
+      return -1;
+    }
+    return 1;
+  });
+  let isNear = false;
+  let text;
+  features.forEach(item => {
+    if (getDistance(center, item.getGeometry().getCoordinates()) < 10000) {
+      isNear = true;
+      text = item.get("sr_name");
+    }
+  })
+  let style = new Style({
+    image: new CircleStyle({
+      radius: 10,
+      fill: new Fill({
+        color: isNear ? "red" : "#3399CC"
+      })
+    }),
+    text: new Text({
+      text: text ? text : features[0].get("sr_name").replace(/^((.{2,3}(市|县|区))|临沂{1})/, ""),
+      fill: new Fill({
+        color: "#4b6584"
+      }),
+      offsetY: 15
+    })
+  })
+  return style;
+}
+const levelStyle = function (features) {
+  let feature = features.get("features").sort(function (a, b) {
+    if (a.get("level") > b.get("level")) {
+      return -1;
+    }
+    return 1;
+  })[0];
+  let style = new Style({
+    image: new CircleStyle({
+      radius: (function (level) {
+        switch (level) {
+          case "5":
+            return 10
+          case "4":
+            return 8
+          case "3":
+            return 6
+          case "2":
+            return 5
+          default:
+            return 5
+        }
+      })(feature.get("level").substr(0, 1)),
+      fill: new Fill({
+        color: (function (level) {
+          switch (level) {
+            case "5":
+              return "rgb(234, 32, 39)"
+            case "4":
+              return "rgb(255, 195, 18)"
+            case "3":
+              return "rgb(196, 229, 56)"
+            case "2":
+              return "rgb(18, 203, 196)"
+            default:
+              return "rgb(0, 148, 50)"
+          }
+        })(feature.get("level").substr(0, 1))
+      })
+    }),
+    text: new Text({
+      text: feature.get("sr_name").replace(/^((.{2,3}(市|县|区))|临沂{1})/, ""),
+      fill: new Fill({
+        color: "#4b6584"
+      }),
+      offsetY: 15
+    })
+  });
+  return style;
+}
+const normalStyle = function (features) {
+  let feature = features.get("features").sort(function (a, b) {
+    if (a.get("level") > b.get("level")) {
+      return -1;
+    }
+    return 1;
+  })[0];
+  let style = new Style({
+    image: new CircleStyle({
+      radius: 10,
+      fill: new Fill({
+        color: '#3399CC'
+      })
+    }),
+    text: new Text({
+      text: feature.get("sr_name").replace(/^((.{2,3}(市|县|区))|临沂{1})/, ""),
+      fill: new Fill({
+        color: "#4b6584"
+      }),
+      offsetY: 15
+    })
+  });
+  return style;
+}
+
 function mapInit() {
-  
   const projectionExtent = projection.getExtent();
   const size = getWidth(projectionExtent) / 256;
   let resolutions = [];
@@ -111,6 +220,13 @@ function mapInit() {
     })
   });
   document.getElementById("locate").addEventListener("click", function () {
+    if (store.state.position) {
+      map.getView().animate({
+        center: store.state.position,
+        zoom: 13
+      });
+      return;
+    }
     map.getView().animate({
       center: CENTER,
       zoom: 10
@@ -119,7 +235,7 @@ function mapInit() {
   return map;
 }
 
-function getLocation() {
+function getLocation(map) {
   let geoLocation = new Geolocation({
     trackingOptions: {
       enableHighAccuracy: true,
@@ -128,11 +244,29 @@ function getLocation() {
     projection: projection,
   });
   geoLocation.setTracking(true);
+  let positionFeature = new Feature();
+  positionFeature.setStyle(new Style({
+    image: new Icon({
+      src: require("@/assets/locate1.png"),
+      scale: 0.7,
+
+    })
+  }));
   geoLocation.on("change:position", () => {
-    store.commit("setLocation", geoLocation.getPosition().toString())
+    let coordinates = geoLocation.getPosition();
+    store.commit("setLocation", coordinates)
+    positionFeature.setGeometry(coordinates ?
+      new Point(coordinates) : null);
+    new VectorLayer({
+      map: map,
+      source: new VectorSource({
+        features: [positionFeature]
+      })
+    });
     geoLocation.setTracking(false);
     geoLocation = null
-  })
+  });
+
   geoLocation.once("error", function () {
     alert("定位失败！请确认是否开启定位权限,开启后请刷新页面重试。");
   })
@@ -167,32 +301,8 @@ async function getPoints(cata) {
 
   let layer = new VectorLayer({
     source: clusterSource,
-    style: function (features) {
-      let feature = features.get("features").sort(function (a, b) {
-        if (a.get("level") > b.get("level")) {
-          return -1;
-        }
-        return 1;
-      })[0];
-      let style = new Style({
-        image: new CircleStyle({
-          radius: 10,
-          stroke: new Stroke({
-            color: '#fff'
-          }),
-          fill: new Fill({
-            color: '#3399CC'
-          })
-        }),
-        text: new Text({
-          text: feature.get("sr_name").replace(/^((.{2,3}(市|县|区))|临沂{1})/, ""),
-          fill: new Fill({
-            color: "#4b6584"
-          }),
-          offsetY: 15
-        })
-      });
-      return style;
+    style: function (feature) {
+      return normalStyle(feature)
     }
   })
   return layer
@@ -213,40 +323,42 @@ function setOverLay(el) {
     }
   });
 }
+let flag1 = false;
+let flag2 = false;
+function setHeatMap(layer, bool) {
+  if (bool) {
+    if (flag1) {
+      setStyleFunc(layer, normalStyle);
+      document.getElementById("legend").style.transform = "translateY(-100%)"
+    } else {
+      setStyleFunc(layer, levelStyle);
+      document.getElementById("legend").style.transform = "translateY(0)"
 
-function setHeatMap(layer) {
-  return getHeatMap(layer)
+    }
+    flag1 = !flag1
+  } else {
+    if (flag2) {
+      setStyleFunc(layer, normalStyle)
+      document.getElementById("legend").style.transform = "translateY(-100%)"
+    } else {
+      setStyleFunc(layer, levelStyle);
+      document.getElementById("legend").style.transform = "translateY(0)"
+    }
+    flag2 = !flag2
+  }
 }
 
-function getfeaStyle(feature) {
-  return (
-    (parseInt(
-      feature.get("features").sort(function (a, b) {
-        if (a.get("level") > b.get("level")) {
-          return -1;
-        }
-        return 1;
-      })[0]
-      .get("level")
-      .substr(0, 1)
-    ) + 2) / 7
-  );
-}
-
-function getHeatMap(layer) {
-  return new Heatmap({
-    source: layer.getSource(),
-    blur: 5,
-    radius: 10,
-    weight: function (feature) {
-      return getfeaStyle(feature)
-    },
-    visible: true
+function setStyleFunc(layer, func) {
+  layer.setStyle(function (feature) {
+    return func(feature)
   })
 }
+
+
 async function addFeatureInfo(cata, id) {
   store.state.overLay.setPosition(undefined);
   let res = await (await getInfo(cata, id)).data;
+  res.distance = store.state.position ? (getDistance(store.state.position, store.state.activePoint.split(",")) / 1000).toFixed(1) : 0
   return res
 }
 async function getInfo(cata, id) {
@@ -282,27 +394,6 @@ async function getRoute() {
 }
 
 function multiLine(arr) {
-  let start = store.state.position.split(",");
-  let startFea = new Feature({
-    geometry: new Point(start)
-  })
-  startFea.setStyle(new Style({
-    image: new CircleStyle({
-      radius: 15,
-      stroke: new Stroke({
-        color: '#fff'
-      }),
-      fill: new Fill({
-        color: '#fc5c65'
-      })
-    }),
-    text: new Text({
-      text: "起",
-      fill: new Fill({
-        color: "#fff"
-      })
-    })
-  }))
   let end = store.state.activePoint.split(",");
   let endFea = new Feature({
     geometry: new Point(end)
@@ -331,7 +422,7 @@ function multiLine(arr) {
   let source = new VectorSource({
     features: [new Feature({
       geometry: new MultiLineString(lines)
-    }), startFea, endFea]
+    }), endFea]
   });
 
   let route = new VectorLayer({
@@ -345,6 +436,26 @@ function multiLine(arr) {
   });
   return route
 }
+let flag = false;
+
+function getNear(center, layer) {
+  if (flag1 || flag2) {
+    flag1 = false;
+    flag2 = false;
+    document.getElementById("legend").style.transform = "translateY(-100%)"
+  }
+  if (!flag) {
+    layer.setStyle(function (feature) {
+      return nearStyle(feature, center)
+    })
+    flag = !flag
+  } else {
+    layer.setStyle(function (feature) {
+      return normalStyle(feature)
+    })
+    flag = !flag
+  }
+}
 export {
   mapInit,
   getPoints,
@@ -352,5 +463,6 @@ export {
   addFeatureInfo,
   setHeatMap,
   getRoute,
-  getLocation
+  getLocation,
+  getNear
 };

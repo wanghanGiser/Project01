@@ -40,4 +40,12 @@ public class ScenicServiceImpl implements ScenicService{
     public int increase(String id) {
         return mapper.increase(id);
     }
+
+    public List<Map<String, String>> selectByIds(String[] list) {
+        return mapper.selectByIds(list);
+    }
+
+    public List<Map<String, Object>> getDataSource() {
+        return mapper.getDataSource();
+    }
 }

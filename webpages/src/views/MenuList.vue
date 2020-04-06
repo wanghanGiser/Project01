@@ -4,12 +4,12 @@
       <tab-button @childEmit="menuList()" v-show="!$store.state.menuShow" />
       <menu-header>
         <div style="display:flex;align-items:center">
-          <user-image @itemClick="itemClick()"/>
+          <user-image :image="image" @itemClick="itemClick()"/>
           <div v-show="!$store.state.isLogin">
             <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
             <a href="javascript:void(0);" @click="logReg(false)">注册</a>
           </div>
-          <a href="javascript:void(0);" v-show="$store.state.isLogin">{{username}}</a>
+          <span href="javascript:void(0);" v-show="$store.state.isLogin">{{username}}</span>
         </div>
         <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" @click.native="toFavo()"/>
       </menu-header>
@@ -24,7 +24,6 @@ import MenuHeader from "@/components/MenuHeader";
 import TabButton from "@/components/common/TabButton";
 import ListBox from "@/components/ListBox";
 import ImageBtn from "@/components/common/ImageBtn.vue";
-import {getLocation} from "@/js/map-load.js"
 export default {
   data() {
     return {
@@ -34,8 +33,10 @@ export default {
   },
   props: {
     username: {
-      type: String,
-      default: ""
+      type: String
+    },
+    image:{
+      type:String
     }
   },
   components: {
@@ -70,9 +71,6 @@ export default {
       };
     }
   },
-  beforeMount() {
-    getLocation()
-  },
   mounted() {
     window.onresize=()=>{
       this.windowSize=window.matchMedia('(max-width:768px)').matches
@@ -88,7 +86,6 @@ export default {
   float: left;
   color: #747d8c;
   background-color: #f1f2f6;
-  display: table;
 }
 
 @media all and (max-width: 768px) {
@@ -120,5 +117,8 @@ a {
 }
 a:active {
   color: #e84118;
+}
+span{
+  text-decoration: underline;
 }
 </style>

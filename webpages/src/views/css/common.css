@@ -9,6 +9,9 @@ html,
 body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-size: 18px;
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden; */
   color: #778ca3;
 }
 
@@ -29,21 +32,39 @@ option {
   background-color: #fff;
 }
 
-*::-webkit-scrollbar {
-  width: 5px;
-  height: 1px;
+.view {
+  float: left;
+  color: #353b48;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgb(247, 247, 247);
 }
-
-*::-webkit-scrollbar-thumb {
-  /*滚动条里面小方块*/
-  border-radius: 10px;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background: #a5b1c2;
+@media screen and (max-width: 768px) {
+  .view {
+    width: 100vw;
+  }
 }
-
-*::-webkit-scrollbar-track {
-  /*滚动条里面轨道*/
-  box-shadow: inset 0 0 5px rgba(200, 200, 200, 0.2);
-  border-radius: 10px;
-  background: #ededed;
+@media screen and (min-width: 769px) {
+  .view {
+    width: calc(100vw - 300px);
+  }
+}
+@media screen and (min-width: 993px) {
+  .view {
+    width: calc(100vw - 300px);
+  }
+}
+@media screen and (min-width: 1201px) {
+  .view {
+    width: calc(100vw - 300px);
+  }
+}
+.header {
+  position: sticky;
+  top: 0;
+  text-align: center;
+  height: 3em;
+  line-height: 3em;
+  background-color: inherit;
+  border-bottom: 1.5px solid rgba(100, 100, 100, 0.5);
 }

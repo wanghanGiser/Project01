@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="JServer:war exploded">
+  <artifact type="war" name="JServer:war exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/JServer_war_exploded</output-path>
-    <root id="root">
+    <root id="archive" name="JServer_war exploded.war">
       <element id="javaee-facet-resources" facet="JServer/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -13,6 +13,11 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.10.0" />
           <element id="library" level="project" name="Maven: com.mchange:c3p0:0.9.5.2" />
           <element id="library" level="project" name="Maven: com.mchange:mchange-commons-java:0.2.11" />
+          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.3.1" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.2" />
+          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-api:0.11.0" />
+          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-impl:0.11.0" />
+          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-jackson:0.11.0" />
           <element id="library" level="project" name="Maven: javax.servlet.jsp:jsp-api:2.2" />
           <element id="library" level="project" name="Maven: javax.servlet:jstl:1.2" />
           <element id="library" level="project" name="Maven: javax.servlet:servlet-api:2.5" />
@@ -31,9 +36,6 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-tx:5.1.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-web:5.1.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:5.1.9.RELEASE" />
-          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-api:0.11.0" />
-          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-impl:0.11.0" />
-          <element id="library" level="project" name="Maven: io.jsonwebtoken:jjwt-jackson:0.11.0" />
         </element>
       </element>
     </root>

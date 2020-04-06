@@ -6,6 +6,7 @@ public class User{
     private String u_pwd;
     private String u_favorites;
     private String u_picture;
+    private String u_nname;
 
     public int getU_id() {
         return u_id;
@@ -49,18 +50,29 @@ public class User{
 
     public User(){}
 
-    public User(String u_name, String u_pwd, String u_favorites, String u_picture) {
+    public User(String u_name, String u_pwd, String u_favorites, String u_picture,String u_nname) {
         this.u_name = u_name;
         this.u_pwd = u_pwd;
         this.u_favorites = u_favorites;
         this.u_picture = u_picture;
+        this.u_nname=u_nname;
+
     }
 
-    public User(Integer u_id, String u_name, String u_pwd, String u_favorites, String u_picture) {
+    public User(Integer u_id, String u_name, String u_pwd, String u_favorites, String u_picture,String u_nname) {
         this.u_id = u_id;
         this.u_name = u_name;
         this.u_pwd = u_pwd;
         this.u_favorites = u_favorites;
         this.u_picture = u_picture;
+        this.u_nname=u_nname;
+    }
+
+    public String getU_nname() {
+        return u_nname;
+    }
+
+    public void setU_nname(String u_nname) {
+        this.u_nname = u_nname;
     }
 }
