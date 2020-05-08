@@ -2,10 +2,10 @@ module.exports = {
   //配置服务器代理解决跨域
   publicPath:"./",
   devServer: {
-    // https:true,
+    https:true,
     proxy: {
       '/api': {
-          target: 'https://localhost:8443',
+          target: 'http://localhost:8080',
           changeOrigin: true,
           ws: true,
           pathRewrite: {

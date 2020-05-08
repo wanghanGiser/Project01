@@ -6,7 +6,7 @@
     <div id="conte">
       <div style="position:relative">
         <img :src="image1" />
-        <input type="file" accept="image/*" id="img" @change="change($event)" />
+        <input type="file" accept="image/*" id="img" @change="check($event)" />
       </div>
       <div>
         <span>昵称:</span>
@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      flag:true,
+      flag: true,
       image1: this.image
     };
   },
@@ -49,15 +49,24 @@ export default {
   },
   methods: {
     upload() {
-      if(!this.flag) return;
       let formData = new FormData();
       let reg = /[a-zA-Z0-9_]{6,16}/;
       let file = document.getElementById("img").files[0];
+      if (!this.flag) file=null;
       let text = document.getElementById("txt");
       let oldpwd = document.getElementById("oldpwd");
       let newpwd = document.getElementById("newpwd");
-      let confirmpwd = document.getElementById("confirmpwd");      
-      if (!(file || text.value || oldpwd.value || newpwd.value || confirmpwd.value)) return;
+      let confirmpwd = document.getElementById("confirmpwd");
+      if (
+        !(
+          file ||
+          text.value ||
+          oldpwd.value ||
+          newpwd.value ||
+          confirmpwd.value
+        )
+      )
+        return;
       file && formData.append("file", document.getElementById("img").files[0]);
       text.value && formData.append("text", text.value);
       if (oldpwd.value) {
@@ -80,25 +89,25 @@ export default {
         })
         .then(res => {
           if (res.data) {
-            let obj={}
-            if(file){
-              obj.img=this.image1;
+            let obj = {};
+            if (file) {
+              obj.img = this.image1;
             }
-            if(text.value){
-              obj.text=text.value
+            if (text.value) {
+              obj.text = text.value;
             }
             this.$emit("changeinfo", obj);
-            alert("修改成功")
+            alert("修改成功");
           }
         });
     },
-    change(e) {
-      if(e.target.files[0].size>1000000){
-        this.flag=false;
+    check(e) {
+      if (e.target.files[0].size > 1000000) {
+        this.flag = false;
         alert("文件不能超过1M");
         return;
       }
-      this.flag=true;
+      this.flag = true;
       let reader = new FileReader();
       // 读取文件的路径，没有返回值,结果在reader.result里
       reader.readAsDataURL(e.target.files[0]);

@@ -31,6 +31,7 @@ export default {
   activated() {
     if (this.$store.state.isLogin) {
       this.$ajax.get("/user/getfav").then(res => {
+        console.log(res.data);
         this.datas = res.data;
       });
     } else {
@@ -42,7 +43,6 @@ export default {
       this.$router.push({ path: "/" });
       this.$store.commit("setPosition", item.location);
       this.$store.commit("setCata", "scenic");
-
       addFeatureInfo("scenic", item.scenic_id).then(res => {
         if (res) {
           this.$store.commit("setInfo", res);

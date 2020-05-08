@@ -1,7 +1,7 @@
 <template>
   <div id="map" class="view">
     <div style="height:0;position:relative">
-      <ul id="legend">
+      <ul id="legend" :style="{transform:'translateY('+translate+')'}">
         <li>5</li>
         <li>4</li>
         <li>3</li>
@@ -66,7 +66,17 @@ export default {
       restLayer: null,
       image1: "url(" + require("@/assets/comment.png") + ")",
       routeImg: "url(" + require("@/assets/route.png") + ")",
-      distance: 0
+      distance: 0,
+      layersStatus: {
+        scenic: {
+          heatmap: false,
+          near: false
+        },
+        rest: {
+          heatmap: false,
+          near: false
+        }
+      }
     };
   },
   computed: {
@@ -81,6 +91,19 @@ export default {
       return this.$store.state.info.ischecked
         ? "url(" + store + ")"
         : "url(" + unstore + ")";
+    },
+    translate() {
+      let buf;
+      let flag = this.$store.state.cata == "scenic";
+      if (
+        (flag && this.layersStatus.scenic.heatmap) ||
+        (!flag && this.layersStatus.rest.heatmap)
+      ) {
+        buf = "0";
+      } else {
+        buf = "-100%";
+      }
+      return buf;
     }
   },
   methods: {
@@ -131,6 +154,34 @@ export default {
       }
       this.scenicLayer.setVisible(newValue == "scenic");
       this.restLayer.setVisible(newValue == "rest");
+    },
+    "layersStatus.scenic.heatmap"(newvalue) {
+      if (newvalue) {
+        if (this.layersStatus.scenic.near) {
+          this.layersStatus.scenic.near = false;
+        }
+      }
+    },
+    "layersStatus.scenic.near"(newvalue){
+      if(newvalue){
+        if(this.layersStatus.scenic.heatmap){
+          this.layersStatus.scenic.heatmap=false
+        }
+      }
+    },
+    "layersStatus.rest.heatmap"(newvalue) {
+      if (newvalue) {
+        if (this.layersStatus.rest.near) {
+          this.layersStatus.rest.near = false;
+        }
+      }
+    },
+    "layersStatus.rest.near"(newvalue){
+      if(newvalue){
+        if(this.layersStatus.rest.heatmap){
+          this.layersStatus.rest.heatmap=false
+        }
+      }
     }
   },
   async mounted() {
@@ -209,9 +260,9 @@ export default {
 
     document.getElementById("heat-map").onclick = () => {
       if (this.$route.path != "/") return;
-      setHeatMap(
+      this.layersStatus[this.$store.state.cata].heatmap = setHeatMap(
         this[this.$store.state.cata + "Layer"],
-        this.$store.state.cata == "scenic"
+        this.layersStatus[this.$store.state.cata].heatmap
       );
     };
     document.getElementById("checkbox").onclick = () => {
@@ -220,9 +271,10 @@ export default {
         alert("未获取到定位");
         return;
       }
-      getNear(
+      this.layersStatus[this.$store.state.cata].near = getNear(
         this.$store.state.position,
-        this[this.$store.state.cata + "Layer"]
+        this[this.$store.state.cata + "Layer"],
+        this.layersStatus[this.$store.state.cata].near
       );
       this.$store.commit("setMenuShow");
       this.map.getView().animate({

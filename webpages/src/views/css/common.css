@@ -9,9 +9,10 @@ html,
 body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-size: 18px;
-  width: 100%;
-  height: 100%;
-  /* overflow: hidden; */
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   color: #778ca3;
 }
 

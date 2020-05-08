@@ -4,14 +4,18 @@
       <tab-button @childEmit="menuList()" v-show="!$store.state.menuShow" />
       <menu-header>
         <div style="display:flex;align-items:center">
-          <user-image :image="image" @itemClick="itemClick()"/>
+          <user-image :image="image" @itemClick="itemClick()" />
           <div v-show="!$store.state.isLogin">
             <a href="javascript:void(0);" @click="logReg(true)">登录</a> /
             <a href="javascript:void(0);" @click="logReg(false)">注册</a>
           </div>
           <span href="javascript:void(0);" v-show="$store.state.isLogin">{{username}}</span>
         </div>
-        <image-btn :title="'收藏夹'" :imgURL="require('@/assets/favorites.png')" @click.native="toFavo()"/>
+        <image-btn
+          :title="'收藏夹'"
+          :imgURL="require('@/assets/favorites.png')"
+          @click.native="toFavo()"
+        />
       </menu-header>
       <list-box @itemClick="itemClick()" />
     </div>
@@ -28,15 +32,15 @@ export default {
   data() {
     return {
       isShow: false,
-      windowSize:window.matchMedia('(max-width:768px)').matches
+      windowSize: window.matchMedia("(max-width:768px)").matches
     };
   },
   props: {
     username: {
       type: String
     },
-    image:{
-      type:String
+    image: {
+      type: String
     }
   },
   components: {
@@ -50,31 +54,39 @@ export default {
     menuList() {
       this.$store.commit("setMenuShow");
     },
-    
+
     logReg(bool) {
       this.$emit("toLogReg", bool);
     },
     itemClick() {
       this.$store.commit("setMenuShow");
     },
-    toFavo(){
-      this.itemClick()
-      if(this.$route.path!="/favorites"){
-        this.$router.push({path:"/favorites"})
+    toFavo() {
+      if (!this.$store.state.isLogin) {
+        alert("请登录！");
+        return;
+      }
+      this.itemClick();
+      if (this.$route.path != "/favorites") {
+        this.$router.push({ path: "/favorites" });
       }
     }
   },
   computed: {
     showMenu() {
       return {
-        transform:this.windowSize? (this.$store.state.menuShow ? "translateX(0)" : "translateX(-300px)"):"none"
+        transform: this.windowSize
+          ? this.$store.state.menuShow
+            ? "translateX(0)"
+            : "translateX(-300px)"
+          : "none"
       };
     }
   },
   mounted() {
-    window.onresize=()=>{
-      this.windowSize=window.matchMedia('(max-width:768px)').matches
-    }
+    window.onresize = () => {
+      this.windowSize = window.matchMedia("(max-width:768px)").matches;
+    };
   }
 };
 </script>
@@ -118,7 +130,7 @@ a {
 a:active {
   color: #e84118;
 }
-span{
+span {
   text-decoration: underline;
 }
 </style>

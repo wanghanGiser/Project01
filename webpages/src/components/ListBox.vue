@@ -1,14 +1,14 @@
 <template>
   <div id="listbox">
     <tool-bar />
-    <div style="overflow:auto;height:calc(100vh - 9em)" id="listcontent">
+    <div style="height:calc(100vh - 9em);overflow-y:auto;overflow-x:hidden;touch-action:pan-y" id="listcontent">
       <list-item
         v-for="(item,index) in $store.state.scenic_list"
         :id="item[id]"
         :name_cn="item.name_cn"
         :description="item.description"
         :location="item.location"
-        :src="'https://res.sdta.cn/'+item.default_photo"
+        :src="'https://res.sdta.cn'+item.default_photo"
         :key="index"
         @itemClick="itemClick()"
       />
@@ -66,5 +66,6 @@ export default {
 <style>
 #listbox {
   position: relative;
+  
 }
 </style>

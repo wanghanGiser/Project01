@@ -19,6 +19,7 @@ instance.interceptors.request.use(function (config) {
 }, function (error) {
   count--
   store.commit("setRun",count);
+  alert(error)
   return Promise.reject(error);
 });
 instance.interceptors.response.use(res => {
@@ -37,8 +38,10 @@ instance.interceptors.response.use(res => {
   store.commit("setLogStatus");
   return res;
 }, err => {
+  
   count--
   store.commit("setRun",count);
+  alert(err)
   return Promise.reject(err)
 })
 export default instance

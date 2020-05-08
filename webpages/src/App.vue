@@ -94,7 +94,7 @@ export default {
       } else {
         this.$ajax.get("/user/info").then(res => {
           if (this.$store.state.isLogin) this.username = res.data.name;
-          if (res.data.pic) this.image = "/api/upload/" + res.data.pic;
+          if (res.data.pic) this.image = "/upload/" + res.data.pic;
         });
       }
     }

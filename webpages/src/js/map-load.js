@@ -323,29 +323,14 @@ function setOverLay(el) {
     }
   });
 }
-let flag1 = false;
-let flag2 = false;
+
 function setHeatMap(layer, bool) {
   if (bool) {
-    if (flag1) {
-      setStyleFunc(layer, normalStyle);
-      document.getElementById("legend").style.transform = "translateY(-100%)"
-    } else {
-      setStyleFunc(layer, levelStyle);
-      document.getElementById("legend").style.transform = "translateY(0)"
-
-    }
-    flag1 = !flag1
+    setStyleFunc(layer, normalStyle);
   } else {
-    if (flag2) {
-      setStyleFunc(layer, normalStyle)
-      document.getElementById("legend").style.transform = "translateY(-100%)"
-    } else {
-      setStyleFunc(layer, levelStyle);
-      document.getElementById("legend").style.transform = "translateY(0)"
-    }
-    flag2 = !flag2
+    setStyleFunc(layer, levelStyle)
   }
+  return !bool
 }
 
 function setStyleFunc(layer, func) {
@@ -436,25 +421,18 @@ function multiLine(arr) {
   });
   return route
 }
-let flag = false;
 
-function getNear(center, layer) {
-  if (flag1 || flag2) {
-    flag1 = false;
-    flag2 = false;
-    document.getElementById("legend").style.transform = "translateY(-100%)"
-  }
-  if (!flag) {
-    layer.setStyle(function (feature) {
-      return nearStyle(feature, center)
+function getNear(center, layer, bool) {
+  if (bool) {
+    layer.setStyle(function (f) {
+      return normalStyle(f)
     })
-    flag = !flag
   } else {
-    layer.setStyle(function (feature) {
-      return normalStyle(feature)
+    layer.setStyle(function (f) {
+      return nearStyle(f, center)
     })
-    flag = !flag
   }
+  return !bool;
 }
 export {
   mapInit,
